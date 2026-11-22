@@ -18,6 +18,7 @@
 #include "dexo_input_hook.h"
 #include "dexo_lua.h"
 #include "dexo_menu.h"
+#include "dexo_skin_config.h"
 #include "dexo_ue4.h"
 
 extern "C" const void* dexo_gameplay_anchor();
@@ -76,6 +77,8 @@ void ensure_imgui()
     load_dexo_login_font(nullptr, nullptr, nullptr);
     if (!g_config_loaded) {
         load_dexo_config();
+        dexo_skin_config_load();
+        dexo_skin_config_apply(g_dexo_app.skin);
         g_config_loaded = true;
     }
     g_dexo_force_lua_inject = dexo_lua_request_inject;

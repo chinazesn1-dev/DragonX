@@ -1,9 +1,11 @@
 #include <cmath>
 #include <cstdio>
+#include <fstream>
 #include <string>
 
 #include "dexo_gameplay.h"
 #include "dexo_lua.h"
+#include "dexo_skin_config.h"
 #include "dexo_ue4.h"
 
 static int g_failures = 0;
@@ -141,6 +143,30 @@ int main()
     dexo_lua_request_inject();
     CHECK(dexo_lua_take_injection_request());
     CHECK(!dexo_lua_take_injection_request());
+
+    const char* config_path = "dexo_skin_config_test.ini";
+    {
+        std::ofstream config(config_path);
+        config << "[skins]\n"
+               << "lua_outfit_res=123\n"
+               << "lua_vehicle_res=456\n"
+               << "bag_res=7\n";
+    }
+    CHECK(dexo_skin_config_load(config_path));
+    CHECK(dexo_skin_config_get("lua_outfit_res", 0) == 123);
+    CHECK(dexo_skin_config_get("LUA_VEHICLE_RES", 0) == 456);
+    CHECK(dexo_skin_config_get("missing", 9) == 9);
+    DexoSkinConfig skin;
+    skin.outfit = 1;
+    skin.bag = 0;
+    skin.helmet = 0;
+    skin.vehicle = 0;
+    dexo_skin_config_apply(skin);
+    CHECK(skin.outfit == 123);
+    CHECK(skin.vehicle == 456);
+    CHECK(skin.bag == 7);
+    CHECK(skin.helmet == 0);
+    std::remove(config_path);
 
     std::printf("failures=%d\n", g_failures);
     return g_failures == 0 ? 0 : 1;

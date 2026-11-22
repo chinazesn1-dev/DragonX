@@ -85,7 +85,7 @@ The reconstructed app modules are now built by `dexo_kentos`:
 
 | File | Size | SHA-256 |
 | --- | ---: | --- |
-| `dist/source-build/libdexo_kentos.so` | 13,338,136 | `71026c56fcc6e249d1114a863a24997f55590551c70daf9e681e7c196ef7d9d6` |
+| `dist/source-build/libdexo_kentos.so` | 13,576,504 | `fe451e8129d1d54310a0927f1ecc93ad2079f8c8c1d136eafec15131c8a20628` |
 
 Implemented: application state, `cheat_config.json` load/save with the original
 keys, the full AIM/ESP/SETTINGS/SKIN/ACCOUNT/ABOUT menu, a self-contained
@@ -121,6 +121,7 @@ verification and mappings.
 The shipped 1.0.2 artifact is the original binary with the two-instruction
 login/licence patch described in `docs/PATCH.md`. The clean-room `dexo_kentos`
 build is a separate, source-level artifact.
+
 
 
 

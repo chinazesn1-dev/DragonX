@@ -133,6 +133,17 @@ game `lua_State`. The menu button executes the original `fps165` chunk
 
 Exports: `dexo_lua_bind_state`, `dexo_lua_run`, `dexo_lua_fps165`.
 
+## Skin configuration
+
+`dexo_skin_config_load()` parses the original `configs.ini` style file
+(`[section]`, `key=value`, `;`/`#` comments). `dexo_skin_config_apply()` maps
+`lua_outfit_res`, `lua_bag_res`, `lua_helmet_res`, `lua_vehicle_res` and the
+non-Lua `outfit_res`/`bag_res`/`helmet_res`/`vehicle_res` keys into
+`DexoSkinConfig`. The build loads `/sdcard/Dexo/configs.ini` after the JSON
+config.
+
+Exports: `dexo_skin_config_load_file`, `dexo_skin_config_value`.
+
 ## Input hook
 
 `dexo_input_hook_install()` inline-hooks

@@ -148,6 +148,12 @@ target_include_directories(dexo_lua_capture PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
 target_link_libraries(dexo_lua_capture PUBLIC dexo_lua dexo_inline_hook)
 set_target_properties(dexo_lua_capture PROPERTIES POSITION_INDEPENDENT_CODE ON CXX_VISIBILITY_PRESET hidden)
 
+add_library(dexo_skin_config STATIC dexo_skin_config.cpp)
+target_compile_features(dexo_skin_config PUBLIC cxx_std_11)
+target_include_directories(dexo_skin_config PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(dexo_skin_config PUBLIC dexo_app)
+set_target_properties(dexo_skin_config PROPERTIES POSITION_INDEPENDENT_CODE ON CXX_VISIBILITY_PRESET hidden)
+
 add_library(dexo_input_hook STATIC dexo_input_hook.cpp)
 target_compile_features(dexo_input_hook PUBLIC cxx_std_11)
 target_include_directories(dexo_input_hook PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -176,7 +182,7 @@ if(ANDROID)
         "${imgui_source_dir}/backends")
     target_link_libraries(dexo_kentos PRIVATE
         dexo_menu dexo_app dexo_hooks dexo_gameplay dexo_lua
-        dexo_lua_capture dexo_ue4 dexo_esp_render dexo_input_hook
+        dexo_lua_capture dexo_ue4 dexo_esp_render dexo_input_hook dexo_skin_config
         dexo_imgui dexo_imgui_android dexo_imgui_gles3
         dexo_texture dexo_assets dexo_login_window
         android EGL GLESv3 log m dl)
