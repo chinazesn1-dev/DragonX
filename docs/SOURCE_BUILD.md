@@ -18,8 +18,8 @@ Result:
 | Property | Value |
 | --- | --- |
 | File | `libdexo_kentos.so` |
-| Size | 13,686,088 bytes |
-| SHA-256 | `871afed1615e1d662e2dae4eb7b1fdb7faf935a8d621bb01d31e54ec29b4b447` |
+| Size | 13,754,288 bytes |
+| SHA-256 | `87b97d65397aca9d9fb74455fe128814e47363daeee739397669313d909d8aa4` |
 | Machine | AArch64, ELF64 shared object |
 | NEEDED | `libandroid.so`, `libEGL.so`, `libGLESv3.so`, `liblog.so`, `libm.so`, `libdl.so`, `libc.so` |
 
@@ -79,10 +79,13 @@ into the ImGui Android backend. `dexo_skin_config_load_defaults()` reads the ori
 `lua_vehicle_res`, ...).
 `dexo_ue4_apply_deadbox_skin()` uses `PlayerTombBox.SetAvatarID`; the menu also
 contains the reconstructed CHAT and FEEDBACK tabs with a local queue.
+`dexo_ue4_set_custom_kill_info()` and `dexo_ue4_send_chat()` call the recovered
+`SetCustomKillInfo` and `ChatComponent.ServerSendMsg` UFunctions.
 `tests/dexo_gameplay_test.cpp` still reports `failures=0`.
 
 Still to verify on a device: the exact UE4 offsets and `ProcessEvent` parameter
 layouts, the Lua state binding, and the runtime behaviour of the source build.
+
 
 
 

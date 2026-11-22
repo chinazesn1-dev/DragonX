@@ -51,6 +51,10 @@ bool dexo_ue4_apply_vehicle_skin(void* character, int skin_id);
 bool dexo_ue4_apply_weapon_skin(void* character, int weapon_id, int skin_id);
 bool dexo_ue4_apply_deadbox_skin(int avatar_id);
 
+/* Kill-message and in-game chat UFunction wrappers. */
+bool dexo_ue4_set_custom_kill_info(const char* text);
+bool dexo_ue4_send_chat(const char* text);
+
 #ifdef __cplusplus
 extern "C" {
 #endif

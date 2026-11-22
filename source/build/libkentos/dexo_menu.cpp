@@ -6,6 +6,7 @@
 
 #include "dexo_feedback.h"
 #include "dexo_lua.h"
+#include "dexo_ue4.h"
 
 namespace {
 
@@ -91,6 +92,12 @@ void skin_tab(DexoAppState& s)
     ImGui::SliderInt("Helmet", &s.skin.helmet, 0, 1000);
     ImGui::SliderInt("Vehicle", &s.skin.vehicle, 0, 1000);
     ImGui::SliderInt("Deadbox ID", &s.skin.deadbox_id, 0, 1000000);
+    static char kill_message[128] = {};
+    ImGui::InputText("##kill_message", kill_message, sizeof(kill_message));
+    if (ImGui::Button("Apply Kill Message", ImVec2(-1.0f, 0.0f)) &&
+        kill_message[0] != '\0') {
+        dexo_ue4_set_custom_kill_info(kill_message);
+    }
     ImGui::TextUnformatted(dexo_lua_status(s.lua_injected));
     ImGui::TextUnformatted("KENTOS skin system: ON (auto).");
     if (ImGui::Button("Force Inject Lua Now", ImVec2(-1.0f, 0.0f))) {
@@ -142,6 +149,7 @@ void chat_tab()
                      sizeof(g_dexo_feedback.chat_input));
     ImGui::SameLine();
     if (ImGui::Button("Send Message") && g_dexo_feedback.chat_input[0] != '\0') {
+        dexo_ue4_send_chat(g_dexo_feedback.chat_input);
         dexo_chat_push(g_dexo_feedback.chat_input);
         g_dexo_feedback.chat_input[0] = '\0';
     }

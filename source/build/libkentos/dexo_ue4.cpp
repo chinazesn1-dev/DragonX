@@ -775,6 +775,55 @@ bool add_controller_input(void* function, float value)
     return true;
 }
 
+struct FStringParam {
+    void* data;
+    int32_t count;
+    int32_t max;
+    int32_t pad;
+};
+
+std::u16string utf8_to_utf16(const char* text)
+{
+    std::u16string result;
+    const auto* bytes = reinterpret_cast<const unsigned char*>(text);
+    while (*bytes != 0) {
+        uint32_t code = *bytes++;
+        if (code < 0x80) {
+            result.push_back(static_cast<char16_t>(code));
+        } else if ((code & 0xe0) == 0xc0 && *bytes != 0) {
+            code = ((code & 0x1f) << 6) | (*bytes++ & 0x3f);
+            result.push_back(static_cast<char16_t>(code));
+        } else if ((code & 0xf0) == 0xe0 && bytes[0] != 0 && bytes[1] != 0) {
+            code = ((code & 0x0f) << 12) | ((bytes[0] & 0x3f) << 6) | (bytes[1] & 0x3f);
+            bytes += 2;
+            result.push_back(static_cast<char16_t>(code));
+        } else if ((code & 0xf8) == 0xf0 && bytes[0] != 0 && bytes[1] != 0 && bytes[2] != 0) {
+            code = ((code & 0x07) << 18) | ((bytes[0] & 0x3f) << 12) |
+                   ((bytes[1] & 0x3f) << 6) | (bytes[2] & 0x3f);
+            bytes += 3;
+            if (code <= 0xffff) {
+                result.push_back(static_cast<char16_t>(code));
+            } else {
+                code -= 0x10000;
+                result.push_back(static_cast<char16_t>(0xd800 + (code >> 10)));
+                result.push_back(static_cast<char16_t>(0xdc00 + (code & 0x3ff)));
+            }
+        } else {
+            result.push_back(static_cast<char16_t>(0xfffd));
+        }
+    }
+    return result;
+}
+
+FStringParam make_fstring(const std::u16string& text)
+{
+    FStringParam result = {};
+    result.data = const_cast<char16_t*>(text.c_str());
+    result.count = static_cast<int32_t>(text.size() + 1);
+    result.max = result.count;
+    return result;
+}
+
 }  // namespace
 
 bool dexo_ue4_aim_apply(const DexoVec3& target, float smooth)
@@ -806,6 +855,60 @@ bool dexo_ue4_aim_apply(const DexoVec3& target, float smooth)
     const bool yaw_ok = add_controller_input(g_yaw_function, yaw_delta);
     const bool pitch_ok = add_controller_input(g_pitch_function, pitch_delta);
     return yaw_ok || pitch_ok;
+}
+
+bool dexo_ue4_set_custom_kill_info(const char* text)
+{
+    if (text == nullptr) {
+        return false;
+    }
+    ensure_runtime_objects();
+    void* cls = dexo_ue4_find_class(
+        "Class ShadowTrackerExtra.STExtraBlueprintFunctionLibrary");
+    void* cdo = cls != nullptr ? dexo_ue4_default_object(cls) : nullptr;
+    void* function = dexo_ue4_find_function(
+        "Function ShadowTrackerExtra.STExtraBlueprintFunctionLibrary.SetCustomKillInfo");
+    if (cdo == nullptr || function == nullptr) {
+        return false;
+    }
+    const std::u16string wide = utf8_to_utf16(text);
+    struct KillInfoParams {
+        FStringParam message;
+    } params = {make_fstring(wide)};
+    process_event(cdo, function, &params);
+    return true;
+}
+
+bool dexo_ue4_send_chat(const char* text)
+{
+    if (text == nullptr || text[0] == '\0' || g_controller == nullptr) {
+        return false;
+    }
+    ensure_runtime_objects();
+    void* get_chat = dexo_ue4_find_function(
+        "Function ShadowTrackerExtra.STExtraPlayerController.GetChatComponent");
+    void* send = dexo_ue4_find_function(
+        "Function ShadowTrackerExtra.ChatComponent.ServerSendMsg");
+    if (send == nullptr) {
+        return false;
+    }
+    void* chat = nullptr;
+    if (get_chat != nullptr) {
+        struct ChatComponentParams {
+            void* result;
+        } params = {};
+        process_event(g_controller, get_chat, &params);
+        chat = params.result;
+    }
+    if (chat == nullptr) {
+        return false;
+    }
+    const std::u16string wide = utf8_to_utf16(text);
+    struct ChatParams {
+        FStringParam message;
+    } params = {make_fstring(wide)};
+    process_event(chat, send, &params);
+    return true;
 }
 
 extern "C" DEXO_PUBLIC int dexo_ue4_available()
@@ -943,4 +1046,14 @@ extern "C" DEXO_PUBLIC int dexo_ue4_apply_weapon_skin_id(void* character, int we
 extern "C" DEXO_PUBLIC int dexo_ue4_apply_deadbox_skin_id(int avatar_id)
 {
     return dexo_ue4_apply_deadbox_skin(avatar_id) ? 1 : 0;
+}
+
+extern "C" DEXO_PUBLIC int dexo_ue4_set_kill_message(const char* text)
+{
+    return dexo_ue4_set_custom_kill_info(text) ? 1 : 0;
+}
+
+extern "C" DEXO_PUBLIC int dexo_ue4_send_chat_message(const char* text)
+{
+    return dexo_ue4_send_chat(text) ? 1 : 0;
 }

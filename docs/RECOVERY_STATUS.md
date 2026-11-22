@@ -85,7 +85,7 @@ The reconstructed app modules are now built by `dexo_kentos`:
 
 | File | Size | SHA-256 |
 | --- | ---: | --- |
-| `dist/source-build/libdexo_kentos.so` | 13,686,088 | `871afed1615e1d662e2dae4eb7b1fdb7faf935a8d621bb01d31e54ec29b4b447` |
+| `dist/source-build/libdexo_kentos.so` | 13,754,288 | `87b97d65397aca9d9fb74455fe128814e47363daeee739397669313d909d8aa4` |
 
 Implemented: application state, `cheat_config.json` load/save with the original
 keys, the full AIM/ESP/SETTINGS/SKIN/ACCOUNT/ABOUT menu, a self-contained
@@ -114,10 +114,11 @@ verification and mappings.
   (no adb device is currently connected), confirm the Lua input hook prologues,
   the captured `lua_State` and ImGui touch input, and validate the source build
   in game;
-* configure the feedback/chat transport endpoint (the binary only contains the
-  Telegram link; the network protocol is not recoverable from it) and confirm
-  the kill-message behaviour, which is currently a local flag because the SDK
-  dump has no kill-message UFunction;
+* configure the external feedback/chat transport endpoint (the binary only
+  contains the Telegram link; the panel protocol is not recoverable from it);
+* validate the FString parameter layouts of `SetCustomKillInfo` and
+  `ChatComponent.ServerSendMsg` on a device; the calls are only made from the
+  menu buttons, never automatically;
 * replace the statically linked third-party code with the vendored sources at
   matching versions;
 * full symbol and behaviour comparison against the original library.
@@ -125,6 +126,7 @@ verification and mappings.
 The shipped 1.0.2 artifact is the original binary with the two-instruction
 login/licence patch described in `docs/PATCH.md`. The clean-room `dexo_kentos`
 build is a separate, source-level artifact.
+
 
 
 

@@ -143,6 +143,18 @@ slider.
 
 Export: `dexo_ue4_apply_deadbox_skin_id`.
 
+## Kill message and in-game chat
+
+`dexo_ue4_set_custom_kill_info()` calls
+`STExtraBlueprintFunctionLibrary.SetCustomKillInfo` with an FString built from
+UTF-8. `dexo_ue4_send_chat()` obtains the controller chat component through
+`STExtraPlayerController.GetChatComponent` and calls
+`ChatComponent.ServerSendMsg` with an FString. Both are triggered only by the
+menu buttons and their `ProcessEvent` parameter layouts still need device
+validation.
+
+Exports: `dexo_ue4_set_kill_message`, `dexo_ue4_send_chat_message`.
+
 ## Feedback and chat
 
 `dexo_feedback.cpp` keeps the original panel state: feedback text, chat log,
