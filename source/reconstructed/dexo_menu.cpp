@@ -4,6 +4,8 @@
 
 #include "imgui.h"
 
+#include "dexo_lua.h"
+
 namespace {
 
 const char* const kTargets[] = {"Head", "Neck", "Chest"};
@@ -87,9 +89,7 @@ void skin_tab(DexoAppState& s)
     ImGui::SliderInt("Bag", &s.skin.bag, 0, 1000);
     ImGui::SliderInt("Helmet", &s.skin.helmet, 0, 1000);
     ImGui::SliderInt("Vehicle", &s.skin.vehicle, 0, 1000);
-    ImGui::TextUnformatted(s.lua_injected
-        ? "Status: LUA INJECTED & RUNNING"
-        : "Status: WAITING INJECT (ENTER LOBBY)");
+    ImGui::TextUnformatted(dexo_lua_status(s.lua_injected));
     ImGui::TextUnformatted("KENTOS skin system: ON (auto).");
     if (ImGui::Button("Force Inject Lua Now", ImVec2(-1.0f, 0.0f))) {
         if (g_dexo_force_lua_inject != nullptr) {

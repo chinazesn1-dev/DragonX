@@ -13,7 +13,10 @@
 #include "dexo_app.h"
 #include "dexo_hooks.h"
 #include "dexo_login_window.h"
+#include "dexo_lua.h"
 #include "dexo_menu.h"
+
+extern "C" const void* dexo_gameplay_anchor();
 
 #define DEXO_LOG_TAG "DEXO"
 #define DEXO_LOGI(...) __android_log_print(ANDROID_LOG_INFO, DEXO_LOG_TAG, __VA_ARGS__)
@@ -48,6 +51,8 @@ void ensure_imgui()
         load_dexo_config();
         g_config_loaded = true;
     }
+    g_dexo_force_lua_inject = dexo_lua_request_inject;
+    DEXO_LOGI("gameplay anchor %p", dexo_gameplay_anchor());
     g_imgui_ready = true;
     DEXO_LOGI("ImGui backend ready");
 }
@@ -69,6 +74,11 @@ EGLBoolean swap_buffers_hook(EGLDisplay display, EGLSurface surface)
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplAndroid_NewFrame(width, height);
             ImGui::NewFrame();
+            if (dexo_lua_take_injection_request()) {
+                g_dexo_app.lua_injected = true;
+                g_dexo_app.status = "Lua Inject Triggered!";
+                DEXO_LOGI("Lua injection requested");
+            }
             draw_dexo_logo_button(g_dexo_app);
             draw_dexo_menu(g_dexo_app);
             ImGui::Render();
@@ -140,3 +150,4 @@ extern "C" __attribute__((visibility("default"), constructor)) void dexo_entry_c
         pthread_detach(thread);
     }
 }
+

@@ -18,8 +18,8 @@ Result:
 | Property | Value |
 | --- | --- |
 | File | `libdexo_kentos.so` |
-| Size | 11,900,912 bytes |
-| SHA-256 | `3485fe920353005419406acbb5b6b8bdea92c85ca7c077dc9936ec5ccb9d3ca5` |
+| Size | 12,301,184 bytes |
+| SHA-256 | `6e6fa83e9d71ba5061feb73df091e640de8cfabeafdf2aacfc2a8aca60314ee5` |
 | Machine | AArch64, ELF64 shared object |
 | NEEDED | `libandroid.so`, `libEGL.so`, `libGLESv3.so`, `liblog.so`, `libm.so`, `libdl.so`, `libc.so` |
 
@@ -60,11 +60,17 @@ Force Inject Lua Now
 KENTOS skin system
 ```
 
-## Still to port
+## Gameplay layer
 
-The memory-reading gameplay layer (player/vehicle/grenade iteration, world-to-
-screen projection, bone ESP, aimbot target selection and Lua execution) lives in
-the remaining decompiled functions under `source/decompiled/`. The source build
-currently provides the real UI, configuration, hooking and render pipeline; the
-gameplay readers are the next reconstruction step.
+`dexo_gameplay.cpp` now ports the aimbot target selection (`FUN_001dbdd8`),
+world-to-screen projection (`FUN_00266308`), the ESP box/skeleton builder and
+vehicle/grenade projection. `dexo_lua.cpp` ports the KENTOS skin resource names
+and the injection request. Both are linked into `dexo_kentos` and covered by
+`tests/dexo_gameplay_test.cpp` (`failures=0`). See `docs/GAMEPLAY_PORT.md`.
+
+Still to port: reading the live UE4 entity list and offsets, obtaining the
+current view-projection matrix, drawing the ESP primitives through ImGui, and
+executing the Lua script in the game VM.
+
+
 

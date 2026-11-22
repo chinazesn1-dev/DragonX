@@ -78,23 +78,31 @@ The reconstructed app modules are now built by `dexo_kentos`:
 
 | File | Size | SHA-256 |
 | --- | ---: | --- |
-| `dist/source-build/libdexo_kentos.so` | 11,900,912 | `3485fe920353005419406acbb5b6b8bdea92c85ca7c077dc9936ec5ccb9d3ca5` |
+| `dist/source-build/libdexo_kentos.so` | 12,301,184 | `6e6fa83e9d71ba5061feb73df091e640de8cfabeafdf2aacfc2a8aca60314ee5` |
 
 Implemented: application state, `cheat_config.json` load/save with the original
 keys, the full AIM/ESP/SETTINGS/SKIN/ACCOUNT/ABOUT menu, a self-contained
 PLT/GOT patcher, `eglSwapBuffers` interception across loaded modules, ImGui
 Android/GLES3 initialization and the floating menu button. The build exports
-`dexo_install_hooks_now` and a constructor present in `.init_array`.
+`dexo_install_hooks_now`, `dexo_gameplay_select_target`,
+`dexo_gameplay_anchor`, `dexo_lua_resource_name` and a constructor present in
+`.init_array`.
 
-See `docs/SOURCE_BUILD.md` for the build command and verification.
+The gameplay layer is ported in `dexo_gameplay.cpp` / `dexo_lua.cpp`: aimbot
+target selection (`FUN_001dbdd8`), world-to-screen projection (`FUN_00266308`),
+the ESP box/skeleton builder, vehicle/grenade projection and the KENTOS skin
+resource names. `tests/dexo_gameplay_test.cpp` runs the pure algorithms with
+MSVC and reports `failures=0`.
+
+See `docs/SOURCE_BUILD.md` and `docs/GAMEPLAY_PORT.md` for the build command,
+verification and mappings.
 
 ## Remaining clean-room work
 
-* port the gameplay memory readers (player/vehicle/grenade iteration,
-  world-to-screen projection, bone ESP, aimbot target selection) and the Lua
-  execution path from `source/decompiled/` (the large menu function is
-  `00000000001e8afc_FUN_001e8afc.c`; the gameplay readers live in the adjacent
-  functions);
+* bind the ported gameplay algorithms (`dexo_gameplay.cpp`, `dexo_lua.cpp`) to
+  the live UE4 entity list, view-projection matrix, ImGui draw calls and game
+  Lua VM (the large menu function is `00000000001e8afc_FUN_001e8afc.c`; the
+  gameplay readers live in the adjacent functions);
 * replace the statically linked third-party code with the vendored sources at
   matching versions;
 * full symbol and behaviour comparison against the original library.
@@ -102,4 +110,5 @@ See `docs/SOURCE_BUILD.md` for the build command and verification.
 The shipped 1.0.2 artifact is the original binary with the two-instruction
 login/licence patch described in `docs/PATCH.md`. The clean-room `dexo_kentos`
 build is a separate, source-level artifact.
+
 

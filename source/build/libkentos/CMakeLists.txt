@@ -125,6 +125,18 @@ target_compile_features(dexo_hooks PUBLIC c_std_11)
 target_include_directories(dexo_hooks PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 set_target_properties(dexo_hooks PROPERTIES POSITION_INDEPENDENT_CODE ON C_VISIBILITY_PRESET hidden)
 
+add_library(dexo_gameplay STATIC dexo_gameplay.cpp)
+target_compile_features(dexo_gameplay PUBLIC cxx_std_11)
+target_include_directories(dexo_gameplay PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(dexo_gameplay PUBLIC dexo_app)
+set_target_properties(dexo_gameplay PROPERTIES POSITION_INDEPENDENT_CODE ON CXX_VISIBILITY_PRESET hidden)
+
+add_library(dexo_lua STATIC dexo_lua.cpp)
+target_compile_features(dexo_lua PUBLIC cxx_std_11)
+target_include_directories(dexo_lua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(dexo_lua PUBLIC dexo_app)
+set_target_properties(dexo_lua PROPERTIES POSITION_INDEPENDENT_CODE ON CXX_VISIBILITY_PRESET hidden)
+
 if(ANDROID)
     add_library(dexo_kentos SHARED dexo_entry.cpp)
     target_compile_features(dexo_kentos PRIVATE cxx_std_11)
@@ -134,7 +146,7 @@ if(ANDROID)
         "${imgui_source_dir}"
         "${imgui_source_dir}/backends")
     target_link_libraries(dexo_kentos PRIVATE
-        dexo_menu dexo_app dexo_hooks
+        dexo_menu dexo_app dexo_hooks dexo_gameplay dexo_lua
         dexo_imgui dexo_imgui_android dexo_imgui_gles3
         dexo_texture dexo_assets dexo_login_window
         android EGL GLESv3 log m dl)
