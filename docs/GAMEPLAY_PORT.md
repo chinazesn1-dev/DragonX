@@ -133,6 +133,24 @@ game `lua_State`. The menu button executes the original `fps165` chunk
 
 Exports: `dexo_lua_bind_state`, `dexo_lua_run`, `dexo_lua_fps165`.
 
+## Deadbox skin
+
+`dexo_ue4_apply_deadbox_skin()` finds every
+`Class ShadowTrackerExtra.PlayerTombBox` object and calls
+`PlayerTombBox.SetAvatarID(avatar_id)`. The id comes from
+`lua_deadbox_res`/`deadbox_res` in `configs.ini` or the menu `Deadbox ID`
+slider.
+
+Export: `dexo_ue4_apply_deadbox_skin_id`.
+
+## Feedback and chat
+
+`dexo_feedback.cpp` keeps the original panel state: feedback text, chat log,
+status, sent/failed counters and the AUTO FEEDBACK flag. The menu has CHAT and
+FEEDBACK tabs. `dexo_feedback_set_transport()` accepts an HTTP/Telegram
+transport; without one the message is queued locally and the status reports
+`Queued (transport not configured)`.
+
 ## Skin configuration
 
 `dexo_skin_config_load()` parses the original `configs.ini` style file

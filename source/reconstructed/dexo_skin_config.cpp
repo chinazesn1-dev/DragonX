@@ -94,6 +94,8 @@ void dexo_skin_config_apply(DexoSkinConfig& skin)
         "lua_helmet_res", dexo_skin_config_get("helmet_res", skin.helmet));
     skin.vehicle = dexo_skin_config_get(
         "lua_vehicle_res", dexo_skin_config_get("vehicle_res", skin.vehicle));
+    skin.deadbox_id = dexo_skin_config_get(
+        "lua_deadbox_res", dexo_skin_config_get("deadbox_res", skin.deadbox_id));
 }
 
 extern "C" DEXO_PUBLIC int dexo_skin_config_load_file(const char* path)

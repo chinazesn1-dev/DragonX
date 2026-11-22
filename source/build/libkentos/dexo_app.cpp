@@ -63,6 +63,7 @@ json to_json(const DexoAppState& s)
     j["Skin_Bag"] = s.skin.bag;
     j["Skin_Helmet"] = s.skin.helmet;
     j["Skin_Vehicle"] = s.skin.vehicle;
+    j["Skin_DeadboxID"] = s.skin.deadbox_id;
 
     j["UI_Opacity"] = s.ui.opacity;
     j["UI_IconOpacity"] = s.ui.icon_opacity;
@@ -145,6 +146,7 @@ void from_json(const json& j, DexoAppState& s)
     read_int(j, "Skin_Bag", s.skin.bag);
     read_int(j, "Skin_Helmet", s.skin.helmet);
     read_int(j, "Skin_Vehicle", s.skin.vehicle);
+    read_int(j, "Skin_DeadboxID", s.skin.deadbox_id);
 
     read_float(j, "UI_Opacity", s.ui.opacity);
     read_float(j, "UI_IconOpacity", s.ui.icon_opacity);

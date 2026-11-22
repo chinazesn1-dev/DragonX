@@ -4,6 +4,7 @@
 
 #include "imgui.h"
 
+#include "dexo_feedback.h"
 #include "dexo_lua.h"
 
 namespace {
@@ -89,6 +90,7 @@ void skin_tab(DexoAppState& s)
     ImGui::SliderInt("Bag", &s.skin.bag, 0, 1000);
     ImGui::SliderInt("Helmet", &s.skin.helmet, 0, 1000);
     ImGui::SliderInt("Vehicle", &s.skin.vehicle, 0, 1000);
+    ImGui::SliderInt("Deadbox ID", &s.skin.deadbox_id, 0, 1000000);
     ImGui::TextUnformatted(dexo_lua_status(s.lua_injected));
     ImGui::TextUnformatted("KENTOS skin system: ON (auto).");
     if (ImGui::Button("Force Inject Lua Now", ImVec2(-1.0f, 0.0f))) {
@@ -108,6 +110,40 @@ void account_tab(DexoAppState& s)
     if (ImGui::Button("Login Clear", ImVec2(-1.0f, 0.0f))) {
         clear_dexo_login_data();
         s.status = "Success : Login Data Cleared!";
+    }
+}
+
+void feedback_tab()
+{
+    ImGui::TextUnformatted("FEEDBACK");
+    ImGui::TextWrapped("Write a review about the game / panel and send it to support.");
+    ImGui::Checkbox("Auto Feedback", &g_dexo_feedback.auto_feedback);
+    ImGui::InputTextMultiline("##dexo_feedback", g_dexo_feedback.feedback,
+                              sizeof(g_dexo_feedback.feedback), ImVec2(-1.0f, 120.0f));
+    if (ImGui::Button("Send Feedback", ImVec2(-1.0f, 0.0f))) {
+        dexo_feedback_send(g_dexo_feedback.feedback);
+    }
+    ImGui::Text("Status: %s", g_dexo_feedback.status.c_str());
+    ImGui::Text("Sent: %d   Failed: %d", g_dexo_feedback.sent, g_dexo_feedback.failed);
+}
+
+void chat_tab()
+{
+    ImGui::TextUnformatted("ONLINE CHAT");
+    ImGui::BeginChild("##dexo_chatlog", ImVec2(0.0f, 220.0f), true);
+    if (g_dexo_feedback.chat.empty()) {
+        ImGui::TextUnformatted("No messages yet");
+    }
+    for (const std::string& message : g_dexo_feedback.chat) {
+        ImGui::TextWrapped("%s", message.c_str());
+    }
+    ImGui::EndChild();
+    ImGui::InputText("##dexo_chat_in", g_dexo_feedback.chat_input,
+                     sizeof(g_dexo_feedback.chat_input));
+    ImGui::SameLine();
+    if (ImGui::Button("Send Message") && g_dexo_feedback.chat_input[0] != '\0') {
+        dexo_chat_push(g_dexo_feedback.chat_input);
+        g_dexo_feedback.chat_input[0] = '\0';
     }
 }
 
@@ -152,6 +188,14 @@ void draw_dexo_menu(DexoAppState& state)
         }
         if (ImGui::BeginTabItem("SKIN")) {
             skin_tab(state);
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("CHAT")) {
+            chat_tab();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("FEEDBACK")) {
+            feedback_tab();
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("ACCOUNT")) {

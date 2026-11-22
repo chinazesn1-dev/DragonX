@@ -123,11 +123,17 @@ EGLBoolean swap_buffers_hook(EGLDisplay display, EGLSurface surface)
                     dexo_ue4_read_world(&g_world, g_dexo_app.aim, g_dexo_app.esp);
                     g_last_world_refresh = now;
                 }
-                if (g_dexo_app.skin.enable && g_dexo_app.skin.vehicle > 0 &&
-                    now - g_last_skin_apply >= 2.0) {
+                if (g_dexo_app.skin.enable && now - g_last_skin_apply >= 2.0) {
                     void* local_player = dexo_ue4_local_player();
-                    if (local_player != nullptr &&
-                        dexo_ue4_apply_vehicle_skin(local_player, g_dexo_app.skin.vehicle)) {
+                    bool applied = false;
+                    if (local_player != nullptr && g_dexo_app.skin.vehicle > 0) {
+                        applied |= dexo_ue4_apply_vehicle_skin(local_player,
+                                                               g_dexo_app.skin.vehicle);
+                    }
+                    if (g_dexo_app.skin.deadbox && g_dexo_app.skin.deadbox_id > 0) {
+                        applied |= dexo_ue4_apply_deadbox_skin(g_dexo_app.skin.deadbox_id);
+                    }
+                    if (applied) {
                         g_last_skin_apply = now;
                     }
                 }

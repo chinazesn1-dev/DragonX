@@ -114,10 +114,15 @@ target_include_directories(dexo_app PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(dexo_app PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../vendor/nlohmann-json-3.9.1")
 set_target_properties(dexo_app PROPERTIES POSITION_INDEPENDENT_CODE ON CXX_VISIBILITY_PRESET hidden)
 
+add_library(dexo_feedback STATIC dexo_feedback.cpp)
+target_compile_features(dexo_feedback PUBLIC cxx_std_11)
+target_include_directories(dexo_feedback PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+set_target_properties(dexo_feedback PROPERTIES POSITION_INDEPENDENT_CODE ON CXX_VISIBILITY_PRESET hidden)
+
 add_library(dexo_menu STATIC dexo_menu.cpp)
 target_compile_features(dexo_menu PUBLIC cxx_std_11)
 target_include_directories(dexo_menu PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(dexo_menu PUBLIC dexo_imgui dexo_app)
+target_link_libraries(dexo_menu PUBLIC dexo_imgui dexo_app dexo_feedback)
 set_target_properties(dexo_menu PROPERTIES POSITION_INDEPENDENT_CODE ON CXX_VISIBILITY_PRESET hidden)
 
 add_library(dexo_hooks STATIC dexo_hooks.c)

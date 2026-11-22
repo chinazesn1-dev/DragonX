@@ -53,6 +53,7 @@ struct DexoSkinConfig {
     int bag = 0;
     int helmet = 0;
     int vehicle = 0;
+    int deadbox_id = 0;
 };
 
 struct DexoUiConfig {

@@ -899,6 +899,36 @@ bool dexo_ue4_apply_weapon_skin(void* character, int weapon_id, int skin_id)
     return true;
 }
 
+bool dexo_ue4_apply_deadbox_skin(int avatar_id)
+{
+    if (avatar_id <= 0) {
+        return false;
+    }
+    ensure_runtime_objects();
+    void* tomb_class = dexo_ue4_find_class("Class ShadowTrackerExtra.PlayerTombBox");
+    void* set_avatar = dexo_ue4_find_function(
+        "Function ShadowTrackerExtra.PlayerTombBox.SetAvatarID");
+    if (tomb_class == nullptr || set_avatar == nullptr) {
+        return false;
+    }
+    std::vector<void*> boxes;
+    collect_class_actors(tomb_class, &boxes);
+    if (boxes.empty()) {
+        return false;
+    }
+    struct AvatarParams {
+        int avatar_id;
+        uint32_t pad;
+    } params = {};
+    params.avatar_id = avatar_id;
+    bool applied = false;
+    for (void* box : boxes) {
+        process_event(box, set_avatar, &params);
+        applied = true;
+    }
+    return applied;
+}
+
 extern "C" DEXO_PUBLIC int dexo_ue4_apply_vehicle_skin_id(void* character, int skin_id)
 {
     return dexo_ue4_apply_vehicle_skin(character, skin_id) ? 1 : 0;
@@ -908,4 +938,9 @@ extern "C" DEXO_PUBLIC int dexo_ue4_apply_weapon_skin_id(void* character, int we
                                                          int skin_id)
 {
     return dexo_ue4_apply_weapon_skin(character, weapon_id, skin_id) ? 1 : 0;
+}
+
+extern "C" DEXO_PUBLIC int dexo_ue4_apply_deadbox_skin_id(int avatar_id)
+{
+    return dexo_ue4_apply_deadbox_skin(avatar_id) ? 1 : 0;
 }
