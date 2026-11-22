@@ -75,6 +75,13 @@ bool dexo_skin_config_load(const char* path)
     return true;
 }
 
+bool dexo_skin_config_load_defaults()
+{
+    bool loaded = dexo_skin_config_load("/sdcard/Dexo/config.txt");
+    loaded |= dexo_skin_config_load("/sdcard/Dexo/configs.ini");
+    return loaded;
+}
+
 int dexo_skin_config_get(const char* key, int fallback)
 {
     if (key == nullptr) {
@@ -87,13 +94,17 @@ int dexo_skin_config_get(const char* key, int fallback)
 void dexo_skin_config_apply(DexoSkinConfig& skin)
 {
     skin.outfit = dexo_skin_config_get(
-        "lua_outfit_res", dexo_skin_config_get("outfit_res", skin.outfit));
+        "lua_outfit_res",
+        dexo_skin_config_get("outfit_res", dexo_skin_config_get("outfit", skin.outfit)));
     skin.bag = dexo_skin_config_get(
-        "lua_bag_res", dexo_skin_config_get("bag_res", skin.bag));
+        "lua_bag_res",
+        dexo_skin_config_get("bag_res", dexo_skin_config_get("bag", skin.bag)));
     skin.helmet = dexo_skin_config_get(
-        "lua_helmet_res", dexo_skin_config_get("helmet_res", skin.helmet));
+        "lua_helmet_res",
+        dexo_skin_config_get("helmet_res", dexo_skin_config_get("helmet", skin.helmet)));
     skin.vehicle = dexo_skin_config_get(
-        "lua_vehicle_res", dexo_skin_config_get("vehicle_res", skin.vehicle));
+        "lua_vehicle_res",
+        dexo_skin_config_get("vehicle_res", dexo_skin_config_get("vehicle", skin.vehicle)));
     skin.deadbox_id = dexo_skin_config_get(
         "lua_deadbox_res", dexo_skin_config_get("deadbox_res", skin.deadbox_id));
 }
@@ -101,6 +112,11 @@ void dexo_skin_config_apply(DexoSkinConfig& skin)
 extern "C" DEXO_PUBLIC int dexo_skin_config_load_file(const char* path)
 {
     return dexo_skin_config_load(path) ? 1 : 0;
+}
+
+extern "C" DEXO_PUBLIC int dexo_skin_config_load_defaults_file()
+{
+    return dexo_skin_config_load_defaults() ? 1 : 0;
 }
 
 extern "C" DEXO_PUBLIC int dexo_skin_config_value(const char* key, int fallback)

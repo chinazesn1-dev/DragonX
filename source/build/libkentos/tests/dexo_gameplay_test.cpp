@@ -166,6 +166,26 @@ int main()
     CHECK(skin.vehicle == 456);
     CHECK(skin.bag == 7);
     CHECK(skin.helmet == 0);
+
+    /* config.txt keys and configs.ini precedence. */
+    {
+        std::ofstream config("dexo_skin_config_txt.ini");
+        config << "outfit=11\n"
+               << "bag=12\n"
+               << "helmet=13\n"
+               << "vehicle=14\n";
+    }
+    CHECK(dexo_skin_config_load("dexo_skin_config_txt.ini"));
+    skin.outfit = 0;
+    skin.bag = 0;
+    skin.helmet = 0;
+    skin.vehicle = 0;
+    dexo_skin_config_apply(skin);
+    CHECK(skin.outfit == 123);
+    CHECK(skin.bag == 7);
+    CHECK(skin.helmet == 13);
+    CHECK(skin.vehicle == 456);
+    std::remove("dexo_skin_config_txt.ini");
     std::remove(config_path);
 
     std::printf("failures=%d\n", g_failures);

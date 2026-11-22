@@ -154,11 +154,12 @@ transport; without one the message is queued locally and the status reports
 ## Skin configuration
 
 `dexo_skin_config_load()` parses the original `configs.ini` style file
-(`[section]`, `key=value`, `;`/`#` comments). `dexo_skin_config_apply()` maps
-`lua_outfit_res`, `lua_bag_res`, `lua_helmet_res`, `lua_vehicle_res` and the
-non-Lua `outfit_res`/`bag_res`/`helmet_res`/`vehicle_res` keys into
-`DexoSkinConfig`. The build loads `/sdcard/Dexo/configs.ini` after the JSON
-config.
+(`[section]`, `key=value`, `;`/`#` comments). `dexo_skin_config_load_defaults()`
+loads `/sdcard/Dexo/config.txt` first and `/sdcard/Dexo/configs.ini` second, so
+the INI values win. `dexo_skin_config_apply()` maps
+`lua_outfit_res`, `lua_bag_res`, `lua_helmet_res`, `lua_vehicle_res`, the
+non-Lua `outfit_res`/`bag_res`/`helmet_res`/`vehicle_res` keys and the plain
+`outfit`/`bag`/`helmet`/`vehicle` keys into `DexoSkinConfig`.
 
 Exports: `dexo_skin_config_load_file`, `dexo_skin_config_value`.
 

@@ -18,8 +18,8 @@ Result:
 | Property | Value |
 | --- | --- |
 | File | `libdexo_kentos.so` |
-| Size | 13,681,264 bytes |
-| SHA-256 | `85341919bb3a684008079fcf34602c1a0ec5700b3a2861621e6dfa458422ab7c` |
+| Size | 13,686,088 bytes |
+| SHA-256 | `871afed1615e1d662e2dae4eb7b1fdb7faf935a8d621bb01d31e54ec29b4b447` |
 | Machine | AArch64, ELF64 shared object |
 | NEEDED | `libandroid.so`, `libEGL.so`, `libGLESv3.so`, `liblog.so`, `libm.so`, `libdl.so`, `libc.so` |
 
@@ -74,14 +74,16 @@ aimbot through `FindLookAtRotation` + `AddControllerYawInput` /
 `luaL_loadbufferx`/`lua_pcall` and executes the original `fps165` chunk. The
 `dexo_lua_capture_install()` inline hook captures the game `lua_State` on the
 first Lua call, and `dexo_input_hook_install()` feeds `initializeMotionEvent`
-into the ImGui Android backend. `dexo_skin_config_load()` reads the original
-`configs.ini` skin IDs (`lua_outfit_res`, `lua_vehicle_res`, ...).
+into the ImGui Android backend. `dexo_skin_config_load_defaults()` reads the original
+`config.txt` and `configs.ini` skin IDs (`outfit`, `lua_outfit_res`,
+`lua_vehicle_res`, ...).
 `dexo_ue4_apply_deadbox_skin()` uses `PlayerTombBox.SetAvatarID`; the menu also
 contains the reconstructed CHAT and FEEDBACK tabs with a local queue.
 `tests/dexo_gameplay_test.cpp` still reports `failures=0`.
 
 Still to verify on a device: the exact UE4 offsets and `ProcessEvent` parameter
 layouts, the Lua state binding, and the runtime behaviour of the source build.
+
 
 
 

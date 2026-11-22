@@ -77,7 +77,7 @@ void ensure_imgui()
     load_dexo_login_font(nullptr, nullptr, nullptr);
     if (!g_config_loaded) {
         load_dexo_config();
-        dexo_skin_config_load();
+        dexo_skin_config_load_defaults();
         dexo_skin_config_apply(g_dexo_app.skin);
         g_config_loaded = true;
     }

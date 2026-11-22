@@ -6,6 +6,9 @@
 /* Loads the original configs.ini-style key=value file. */
 bool dexo_skin_config_load(const char* path = "/sdcard/Dexo/configs.ini");
 
+/* Loads /sdcard/Dexo/config.txt then /sdcard/Dexo/configs.ini (later wins). */
+bool dexo_skin_config_load_defaults();
+
 /* Returns an integer value or `fallback`. */
 int dexo_skin_config_get(const char* key, int fallback = 0);
 
@@ -17,6 +20,7 @@ extern "C" {
 #endif
 
 int dexo_skin_config_load_file(const char* path);
+int dexo_skin_config_load_defaults_file();
 int dexo_skin_config_value(const char* key, int fallback);
 
 #ifdef __cplusplus
