@@ -18,8 +18,8 @@ Result:
 | Property | Value |
 | --- | --- |
 | File | `libdexo_kentos.so` |
-| Size | 11,898,672 bytes |
-| SHA-256 | `8da6a1cc9978adce3781b39c2f84f3a42939eff810444df7455c3cdab9b5b209` |
+| Size | 11,900,912 bytes |
+| SHA-256 | `3485fe920353005419406acbb5b6b8bdea92c85ca7c077dc9936ec5ccb9d3ca5` |
 | Machine | AArch64, ELF64 shared object |
 | NEEDED | `libandroid.so`, `libEGL.so`, `libGLESv3.so`, `liblog.so`, `libm.so`, `libdl.so`, `libc.so` |
 
@@ -67,3 +67,4 @@ screen projection, bone ESP, aimbot target selection and Lua execution) lives in
 the remaining decompiled functions under `source/decompiled/`. The source build
 currently provides the real UI, configuration, hooking and render pipeline; the
 gameplay readers are the next reconstruction step.
+

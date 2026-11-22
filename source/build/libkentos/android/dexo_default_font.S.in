@@ -1,0 +1,9 @@
+.section .rodata.dexo_default_font,"a",%progbits
+.globl dexo_default_font
+.hidden dexo_default_font
+.type dexo_default_font,%object
+dexo_default_font:
+.incbin "@dexo_default_font@"
+.size dexo_default_font, . - dexo_default_font
+
+.section .note.GNU-stack,"",%progbits

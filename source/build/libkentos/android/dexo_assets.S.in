@@ -1,0 +1,26 @@
+.section .data.dexo_png,"aw",%progbits
+.balign 16
+.globl dexo_png
+.hidden dexo_png
+.type dexo_png,%object
+dexo_png:
+.incbin "@dexo_png@"
+.size dexo_png, . - dexo_png
+
+.globl dexo_jost
+.hidden dexo_jost
+.type dexo_jost,%object
+dexo_jost:
+.incbin "@dexo_jost@"
+.size dexo_jost, . - dexo_jost
+
+.section .rodata.dexo_icons,"a",%progbits
+.balign 4
+.globl dexo_icons
+.hidden dexo_icons
+.type dexo_icons,%object
+dexo_icons:
+.incbin "@dexo_icons@"
+.size dexo_icons, . - dexo_icons
+
+.section .note.GNU-stack,"",%progbits
