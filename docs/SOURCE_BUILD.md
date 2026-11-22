@@ -18,8 +18,8 @@ Result:
 | Property | Value |
 | --- | --- |
 | File | `libdexo_kentos.so` |
-| Size | 12,301,184 bytes |
-| SHA-256 | `6e6fa83e9d71ba5061feb73df091e640de8cfabeafdf2aacfc2a8aca60314ee5` |
+| Size | 13,278,928 bytes |
+| SHA-256 | `aeaf8b5882d01a3fe51fc62dfd34eb02a02c6ee6fd466d8dc1d6b6a9afba0cd6` |
 | Machine | AArch64, ELF64 shared object |
 | NEEDED | `libandroid.so`, `libEGL.so`, `libGLESv3.so`, `liblog.so`, `libm.so`, `libdl.so`, `libc.so` |
 
@@ -71,6 +71,7 @@ and the injection request. Both are linked into `dexo_kentos` and covered by
 Still to port: reading the live UE4 entity list and offsets, obtaining the
 current view-projection matrix, drawing the ESP primitives through ImGui, and
 executing the Lua script in the game VM.
+
 
 
 
