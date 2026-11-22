@@ -72,14 +72,33 @@ The validation object is a functional subset, not a replacement for the full
 library. Byte-identical rebuilding remains a separate task because the original
 object files and Obfuscator-LLVM configuration are unavailable.
 
+## Compilable source build
+
+The reconstructed app modules are now built by `dexo_kentos`:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `dist/source-build/libdexo_kentos.so` | 11,898,672 | `8da6a1cc9978adce3781b39c2f84f3a42939eff810444df7455c3cdab9b5b209` |
+
+Implemented: application state, `cheat_config.json` load/save with the original
+keys, the full AIM/ESP/SETTINGS/SKIN/ACCOUNT/ABOUT menu, a self-contained
+PLT/GOT patcher, `eglSwapBuffers` interception across loaded modules, ImGui
+Android/GLES3 initialization and the floating menu button. The build exports
+`dexo_install_hooks_now` and a constructor present in `.init_array`.
+
+See `docs/SOURCE_BUILD.md` for the build command and verification.
+
 ## Remaining clean-room work
 
-* hand reconstruction of the menu, ESP, aimbot, skin/Lua and config modules from
-  `source/decompiled/00000000001e8afc_FUN_001e8afc.c` and the neighbouring
-  functions;
-* replacement of the statically linked third-party code with the vendored
-  sources at matching versions;
+* port the gameplay memory readers (player/vehicle/grenade iteration,
+  world-to-screen projection, bone ESP, aimbot target selection) and the Lua
+  execution path from `source/decompiled/` (the large menu function is
+  `00000000001e8afc_FUN_001e8afc.c`; the gameplay readers live in the adjacent
+  functions);
+* replace the statically linked third-party code with the vendored sources at
+  matching versions;
 * full symbol and behaviour comparison against the original library.
 
 The shipped 1.0.2 artifact is the original binary with the two-instruction
-login/licence patch described in `docs/PATCH.md`, not a clean-room rebuild.
+login/licence patch described in `docs/PATCH.md`. The clean-room `dexo_kentos`
+build is a separate, source-level artifact.

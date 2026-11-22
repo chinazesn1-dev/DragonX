@@ -73,8 +73,14 @@ entry points at `0xd8294`, `0xd83d0`, `0xd83d4` and `0xeb5dc`).
 (login window, key transport, ImGui/Android glue) used for behavioural
 comparison.
 
-The complete clean-room source tree is still being reconstructed; the patched
-binary is the currently shipped functional artifact.
+A compilable source build now exists: `source/reconstructed/dexo_app.cpp`,
+`dexo_menu.cpp`, `dexo_hooks.c` and `dexo_entry.cpp` are linked into
+`dist/source-build/libdexo_kentos.so` (11,898,672 bytes, SHA-256
+`8da6a1cc9978adce3781b39c2f84f3a42939eff810444df7455c3cdab9b5b209`).
+It implements the real menu, JSON configuration, PLT/GOT hooking,
+`eglSwapBuffers` interception and the ImGui Android/GLES3 pipeline.
+See `docs/SOURCE_BUILD.md`. The gameplay memory readers and Lua injection
+are still being ported; the patched binary remains the shipped artifact.
 
 ## Rebuilding the patch
 
@@ -83,3 +89,4 @@ $env:PYTHONPATH = 'C:\Users\user\Downloads\build-tools\reverse-engineering\analy
 python tools/make_patch.py
 python tools/gate_test.py dist/libkentos.so
 ```
+
