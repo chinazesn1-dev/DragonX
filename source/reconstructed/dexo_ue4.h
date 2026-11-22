@@ -43,6 +43,9 @@ bool dexo_ue4_read_world(DexoWorld* world, const DexoAimbotConfig& aim,
 /* Read the bones configured by the ESP skeleton table for one actor. */
 bool dexo_ue4_read_bones(void* actor, DexoPlayer* player);
 
+/* Compute FindLookAtRotation and feed it through AddControllerYaw/PitchInput. */
+bool dexo_ue4_aim_apply(const DexoVec3& target, float smooth);
+
 #ifdef __cplusplus
 extern "C" {
 #endif

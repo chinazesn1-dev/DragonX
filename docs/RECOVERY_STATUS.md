@@ -85,7 +85,7 @@ The reconstructed app modules are now built by `dexo_kentos`:
 
 | File | Size | SHA-256 |
 | --- | ---: | --- |
-| `dist/source-build/libdexo_kentos.so` | 13,278,928 | `aeaf8b5882d01a3fe51fc62dfd34eb02a02c6ee6fd466d8dc1d6b6a9afba0cd6` |
+| `dist/source-build/libdexo_kentos.so` | 13,297,960 | `47fb636eb54a148282f1e22498911bbe93076bf84a0f01fd4ed10a27fed1dd0d` |
 
 Implemented: application state, `cheat_config.json` load/save with the original
 keys, the full AIM/ESP/SETTINGS/SKIN/ACCOUNT/ABOUT menu, a self-contained
@@ -95,21 +95,24 @@ Android/GLES3 initialization and the floating menu button. The build exports
 `dexo_gameplay_anchor`, `dexo_lua_resource_name` and a constructor present in
 `.init_array`.
 
-The gameplay layer is ported in `dexo_gameplay.cpp` / `dexo_lua.cpp`: aimbot
-target selection (`FUN_001dbdd8`), world-to-screen projection (`FUN_00266308`),
-the ESP box/skeleton builder, vehicle/grenade projection and the KENTOS skin
-resource names. `tests/dexo_gameplay_test.cpp` runs the pure algorithms with
-MSVC and reports `failures=0`.
+The gameplay layer is ported in `dexo_gameplay.cpp`, `dexo_ue4.cpp`,
+`dexo_lua.cpp` and `dexo_esp_render.cpp`: aimbot target selection
+(`FUN_001dbdd8`), world-to-screen projection (`FUN_00266308`), the ESP
+box/skeleton builder, vehicle/grenade projection, live UE4 reflection
+(GObjects/FNamePool/ProcessEvent/entity list), aimbot application through
+`FindLookAtRotation` + `AddControllerYaw/PitchInput`, Lua execution through
+`luaL_loadbufferx`/`lua_pcall`, and the ImGui ESP renderer.
+`tests/dexo_gameplay_test.cpp` runs the pure algorithms with MSVC and reports
+`failures=0`.
 
 See `docs/SOURCE_BUILD.md` and `docs/GAMEPLAY_PORT.md` for the build command,
 verification and mappings.
 
 ## Remaining clean-room work
 
-* bind the ported gameplay algorithms (`dexo_gameplay.cpp`, `dexo_lua.cpp`) to
-  the live UE4 entity list, view-projection matrix, ImGui draw calls and game
-  Lua VM (the large menu function is `00000000001e8afc_FUN_001e8afc.c`; the
-  gameplay readers live in the adjacent functions);
+* verify the UE4 offsets and `ProcessEvent` parameter layouts on a real device
+  (no adb device is currently connected), bind the live Lua `lua_State`, and
+  validate the source build in game;
 * replace the statically linked third-party code with the vendored sources at
   matching versions;
 * full symbol and behaviour comparison against the original library.
@@ -117,6 +120,7 @@ verification and mappings.
 The shipped 1.0.2 artifact is the original binary with the two-instruction
 login/licence patch described in `docs/PATCH.md`. The clean-room `dexo_kentos`
 build is a separate, source-level artifact.
+
 
 
 

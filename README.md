@@ -81,8 +81,8 @@ comparison.
 
 A compilable source build now exists: `source/reconstructed/dexo_app.cpp`,
 `dexo_menu.cpp`, `dexo_hooks.c` and `dexo_entry.cpp` are linked into
-`dist/source-build/libdexo_kentos.so` (13,278,928 bytes, SHA-256
-`aeaf8b5882d01a3fe51fc62dfd34eb02a02c6ee6fd466d8dc1d6b6a9afba0cd6`).
+`dist/source-build/libdexo_kentos.so` (13,297,960 bytes, SHA-256
+`47fb636eb54a148282f1e22498911bbe93076bf84a0f01fd4ed10a27fed1dd0d`).
 It implements the real menu, JSON configuration, PLT/GOT hooking,
 `eglSwapBuffers` interception and the ImGui Android/GLES3 pipeline.
 See `docs/SOURCE_BUILD.md`. The gameplay memory readers and Lua injection
@@ -95,6 +95,7 @@ $env:PYTHONPATH = 'C:\Users\user\Downloads\build-tools\reverse-engineering\analy
 python tools/make_patch.py
 python tools/gate_test.py dist/libkentos.so
 ```
+
 
 
 

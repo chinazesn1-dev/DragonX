@@ -18,8 +18,8 @@ Result:
 | Property | Value |
 | --- | --- |
 | File | `libdexo_kentos.so` |
-| Size | 13,278,928 bytes |
-| SHA-256 | `aeaf8b5882d01a3fe51fc62dfd34eb02a02c6ee6fd466d8dc1d6b6a9afba0cd6` |
+| Size | 13,297,960 bytes |
+| SHA-256 | `47fb636eb54a148282f1e22498911bbe93076bf84a0f01fd4ed10a27fed1dd0d` |
 | Machine | AArch64, ELF64 shared object |
 | NEEDED | `libandroid.so`, `libEGL.so`, `libGLESv3.so`, `liblog.so`, `libm.so`, `libdl.so`, `libc.so` |
 
@@ -62,15 +62,19 @@ KENTOS skin system
 
 ## Gameplay layer
 
-`dexo_gameplay.cpp` now ports the aimbot target selection (`FUN_001dbdd8`),
-world-to-screen projection (`FUN_00266308`), the ESP box/skeleton builder and
-vehicle/grenade projection. `dexo_lua.cpp` ports the KENTOS skin resource names
-and the injection request. Both are linked into `dexo_kentos` and covered by
-`tests/dexo_gameplay_test.cpp` (`failures=0`). See `docs/GAMEPLAY_PORT.md`.
+`dexo_gameplay.cpp` ports target selection (`FUN_001dbdd8`), world-to-screen
+(`FUN_00266308`), the ESP box/skeleton builder and vehicle/grenade projection.
+`dexo_ue4.cpp` implements the live UE4 reflection layer (GObjects, FNamePool,
+`ProcessEvent`, entity list, `GetBoneLocation`, `GetDistanceTo`,
+`LineOfSightTo`, `ProjectWorldToScreen`), feeds the ESP renderer and applies the
+aimbot through `FindLookAtRotation` + `AddControllerYawInput` /
+`AddControllerPitchInput`. `dexo_lua.cpp` binds the game Lua state, resolves
+`luaL_loadbufferx`/`lua_pcall` and executes the original `fps165` chunk.
+`tests/dexo_gameplay_test.cpp` still reports `failures=0`.
 
-Still to port: reading the live UE4 entity list and offsets, obtaining the
-current view-projection matrix, drawing the ESP primitives through ImGui, and
-executing the Lua script in the game VM.
+Still to verify on a device: the exact UE4 offsets and `ProcessEvent` parameter
+layouts, the Lua state binding, and the runtime behaviour of the source build.
+
 
 
 

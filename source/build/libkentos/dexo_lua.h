@@ -30,4 +30,30 @@ bool dexo_lua_take_injection_request();
 /* Original status strings. */
 const char* dexo_lua_status(bool injected);
 
+/* Bind the game Lua state and its C API functions. */
+bool dexo_lua_bind(void* state, void* loadbufferx, void* pcall,
+                   void* gettop, void* settop);
+
+/* Resolve luaL_loadbufferx/lua_pcall from the loaded game module. */
+bool dexo_lua_resolve();
+
+/* luaL_loadbufferx + lua_pcall with the original "t" mode. */
+bool dexo_lua_execute(const char* script, const char* name);
+
+/* The original 165 FPS unlock chunk. */
+const char* dexo_lua_fps_script();
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int dexo_lua_bind_state(void* state, void* loadbufferx, void* pcall,
+                        void* gettop, void* settop);
+int dexo_lua_run(const char* script, const char* name);
+const char* dexo_lua_fps165();
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

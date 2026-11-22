@@ -34,6 +34,11 @@ void* g_bone_function = nullptr;
 void* g_distance_function = nullptr;
 void* g_los_function = nullptr;
 void* g_location_function = nullptr;
+void* g_lookat_function = nullptr;
+void* g_math_library = nullptr;
+void* g_yaw_function = nullptr;
+void* g_pitch_function = nullptr;
+void* g_rotation_function = nullptr;
 
 std::unordered_map<std::string, void*> g_object_cache;
 std::unordered_map<std::string, uint32_t> g_fname_cache;
@@ -421,6 +426,11 @@ bool dexo_ue4_init(uintptr_t libue4_base)
     g_distance_function = nullptr;
     g_los_function = nullptr;
     g_location_function = nullptr;
+    g_lookat_function = nullptr;
+    g_math_library = nullptr;
+    g_yaw_function = nullptr;
+    g_pitch_function = nullptr;
+    g_rotation_function = nullptr;
     if (g_base == 0) {
         return false;
     }
@@ -666,6 +676,134 @@ bool dexo_ue4_read_world(DexoWorld* world, const DexoAimbotConfig& aim,
     return true;
 }
 
+namespace {
+
+struct DexoRotator {
+    float pitch;
+    float yaw;
+    float roll;
+};
+
+float normalize_degrees(float value)
+{
+    while (value > 180.0f) {
+        value -= 360.0f;
+    }
+    while (value < -180.0f) {
+        value += 360.0f;
+    }
+    return value;
+}
+
+bool get_control_rotation(DexoRotator* out)
+{
+    ensure_runtime_objects();
+    if (g_rotation_function == nullptr) {
+        g_rotation_function = find_object_uncached(
+            "Function Engine.Controller.GetControlRotation");
+    }
+    if (g_rotation_function == nullptr || g_controller == nullptr || out == nullptr) {
+        return false;
+    }
+    struct RotationParams {
+        float pitch;
+        float yaw;
+        float roll;
+    } params = {};
+    process_event(g_controller, g_rotation_function, &params);
+    out->pitch = params.pitch;
+    out->yaw = params.yaw;
+    out->roll = params.roll;
+    return true;
+}
+
+bool find_look_at(const DexoVec3& start, const DexoVec3& target, DexoRotator* out)
+{
+    ensure_runtime_objects();
+    if (g_lookat_function == nullptr) {
+        g_lookat_function = find_object_uncached(
+            "Function Engine.KismetMathLibrary.FindLookAtRotation");
+    }
+    if (g_math_library == nullptr) {
+        void* cls = dexo_ue4_find_class("Class Engine.KismetMathLibrary");
+        if (cls != nullptr) {
+            g_math_library = dexo_ue4_default_object(cls);
+        }
+    }
+    if (g_lookat_function == nullptr || g_math_library == nullptr || out == nullptr) {
+        return false;
+    }
+    struct LookAtParams {
+        float start_x;
+        float start_y;
+        float start_z;
+        uint32_t pad0;
+        float target_x;
+        float target_y;
+        float target_z;
+        uint32_t pad1;
+        float pitch;
+        float yaw;
+        float roll;
+    } params = {};
+    params.start_x = start.x;
+    params.start_y = start.y;
+    params.start_z = start.z;
+    params.target_x = target.x;
+    params.target_y = target.y;
+    params.target_z = target.z;
+    process_event(g_math_library, g_lookat_function, &params);
+    out->pitch = params.pitch;
+    out->yaw = params.yaw;
+    out->roll = params.roll;
+    return true;
+}
+
+bool add_controller_input(void* function, float value)
+{
+    if (function == nullptr || g_controller == nullptr) {
+        return false;
+    }
+    struct FloatParam {
+        float value;
+    } params = {value};
+    process_event(g_controller, function, &params);
+    return true;
+}
+
+}  // namespace
+
+bool dexo_ue4_aim_apply(const DexoVec3& target, float smooth)
+{
+    ensure_runtime_objects();
+    if (g_controller == nullptr || g_local_player == nullptr) {
+        return false;
+    }
+    if (g_yaw_function == nullptr) {
+        g_yaw_function = find_object_uncached(
+            "Function Engine.PlayerController.AddControllerYawInput");
+    }
+    if (g_pitch_function == nullptr) {
+        g_pitch_function = find_object_uncached(
+            "Function Engine.PlayerController.AddControllerPitchInput");
+    }
+    DexoVec3 start;
+    if (!get_actor_location(g_local_player, &start)) {
+        return false;
+    }
+    DexoRotator look;
+    DexoRotator current;
+    if (!find_look_at(start, target, &look) || !get_control_rotation(&current)) {
+        return false;
+    }
+    const float divisor = smooth > 1.0f ? smooth : 1.0f;
+    const float yaw_delta = normalize_degrees(look.yaw - current.yaw) / divisor;
+    const float pitch_delta = normalize_degrees(look.pitch - current.pitch) / divisor;
+    const bool yaw_ok = add_controller_input(g_yaw_function, yaw_delta);
+    const bool pitch_ok = add_controller_input(g_pitch_function, pitch_delta);
+    return yaw_ok || pitch_ok;
+}
+
 extern "C" DEXO_PUBLIC int dexo_ue4_available()
 {
     return (g_ready && g_local_player != nullptr) ? 1 : 0;
@@ -680,4 +818,9 @@ extern "C" DEXO_PUBLIC int dexo_ue4_object_count()
 extern "C" DEXO_PUBLIC uint32_t dexo_ue4_fname_index(const char* name)
 {
     return find_fname_index(name);
+}
+
+extern "C" DEXO_PUBLIC int dexo_ue4_aim_at(float x, float y, float z, float smooth)
+{
+    return dexo_ue4_aim_apply(DexoVec3(x, y, z), smooth) ? 1 : 0;
 }

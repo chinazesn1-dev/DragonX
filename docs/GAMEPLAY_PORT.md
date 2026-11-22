@@ -96,3 +96,26 @@ It checks:
 
 The Android build exports `dexo_gameplay_select_target`,
 `dexo_gameplay_anchor` and `dexo_lua_resource_name`.
+
+## Aimbot application
+
+`dexo_ue4_aim_apply()` mirrors the application block of `FUN_001dcdb0`: it
+reads the controller control rotation, computes
+`KismetMathLibrary.FindLookAtRotation` from the local pawn to the selected
+bone, normalizes the yaw/pitch delta and calls
+`PlayerController.AddControllerYawInput` / `AddControllerPitchInput` divided by
+the Smooth value. The original yaw/pitch wrappers are `FUN_002664bc` and
+`FUN_002665c0`.
+
+Export: `dexo_ue4_aim_at`.
+
+## Lua execution
+
+`dexo_lua_execute()` mirrors the original injector `FUN_00267b1c`:
+`luaL_loadbufferx(L, script, len, name, "t")` followed by
+`lua_pcall(L, 0, 0, 0)`. `dexo_lua_resolve()` looks up the four Lua C functions
+in the loaded `libUE4.so` or `RTLD_DEFAULT`; `dexo_lua_bind_state()` binds the
+game `lua_State`. The menu button executes the original `fps165` chunk
+(`dexo_lua_fps_script()`, `t.MaxFPS 165`).
+
+Exports: `dexo_lua_bind_state`, `dexo_lua_run`, `dexo_lua_fps165`.

@@ -100,9 +100,12 @@ EGLBoolean swap_buffers_hook(EGLDisplay display, EGLSurface surface)
             ImGui_ImplAndroid_NewFrame(width, height);
             ImGui::NewFrame();
             if (dexo_lua_take_injection_request()) {
-                g_dexo_app.lua_injected = true;
-                g_dexo_app.status = "Lua Inject Triggered!";
-                DEXO_LOGI("Lua injection requested");
+                dexo_lua_resolve();
+                const bool injected = dexo_lua_execute(dexo_lua_fps_script(), "fps165");
+                g_dexo_app.lua_injected = injected;
+                g_dexo_app.status = injected ? "Lua Inject Triggered!"
+                                             : "Lua VM not bound";
+                DEXO_LOGI("Lua injection: %s", injected ? "ok" : "not bound");
             }
             const bool gameplay_wanted = g_dexo_app.esp.enable ||
                                          g_dexo_app.esp.vehicles ||
@@ -116,6 +119,16 @@ EGLBoolean swap_buffers_hook(EGLDisplay display, EGLSurface surface)
                 DexoProjector projector;
                 projector.project = &ue4_project_adapter;
                 projector.context = nullptr;
+                if (g_dexo_app.aim.enable) {
+                    float screen_distance = 0.0f;
+                    const DexoPlayer* target = dexo_select_aim_target_projected(
+                        g_world, projector, g_dexo_app.aim,
+                        DexoVec2(width * 0.5f, height * 0.5f),
+                        width, height, &screen_distance);
+                    if (target != nullptr) {
+                        dexo_ue4_aim_apply(target->head, g_dexo_app.aim.smooth);
+                    }
+                }
                 dexo_render_esp(ImGui::GetBackgroundDrawList(), g_world,
                                 g_dexo_app.esp, g_dexo_app.aim, projector,
                                 width, height);
