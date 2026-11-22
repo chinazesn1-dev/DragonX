@@ -15,6 +15,7 @@
 #include "dexo_gameplay.h"
 #include "dexo_hooks.h"
 #include "dexo_login_window.h"
+#include "dexo_input_hook.h"
 #include "dexo_lua.h"
 #include "dexo_menu.h"
 #include "dexo_ue4.h"
@@ -80,6 +81,7 @@ void ensure_imgui()
     g_dexo_force_lua_inject = dexo_lua_request_inject;
     DEXO_LOGI("gameplay anchor %p", dexo_gameplay_anchor());
     DEXO_LOGI("lua capture installed=%d", dexo_lua_capture_install());
+    DEXO_LOGI("input hook installed=%d", dexo_input_hook_install());
     g_imgui_ready = true;
     DEXO_LOGI("ImGui backend ready");
 }

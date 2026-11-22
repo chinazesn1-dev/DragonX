@@ -18,8 +18,8 @@ Result:
 | Property | Value |
 | --- | --- |
 | File | `libdexo_kentos.so` |
-| Size | 13,335,272 bytes |
-| SHA-256 | `8bf19c6e645547b8c4dc3993591eab40a5b0a0dba898b5d0b6461df3e6cd9815` |
+| Size | 13,338,136 bytes |
+| SHA-256 | `71026c56fcc6e249d1114a863a24997f55590551c70daf9e681e7c196ef7d9d6` |
 | Machine | AArch64, ELF64 shared object |
 | NEEDED | `libandroid.so`, `libEGL.so`, `libGLESv3.so`, `liblog.so`, `libm.so`, `libdl.so`, `libc.so` |
 
@@ -73,11 +73,13 @@ aimbot through `FindLookAtRotation` + `AddControllerYawInput` /
 (`VehicleAvatarComponent.ChangeItemAvatar`). `dexo_lua.cpp` binds the game Lua state, resolves
 `luaL_loadbufferx`/`lua_pcall` and executes the original `fps165` chunk. The
 `dexo_lua_capture_install()` inline hook captures the game `lua_State` on the
-first Lua call.
+first Lua call, and `dexo_input_hook_install()` feeds `initializeMotionEvent`
+into the ImGui Android backend.
 `tests/dexo_gameplay_test.cpp` still reports `failures=0`.
 
 Still to verify on a device: the exact UE4 offsets and `ProcessEvent` parameter
 layouts, the Lua state binding, and the runtime behaviour of the source build.
+
 
 
 

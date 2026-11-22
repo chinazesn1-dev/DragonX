@@ -133,6 +133,16 @@ game `lua_State`. The menu button executes the original `fps165` chunk
 
 Exports: `dexo_lua_bind_state`, `dexo_lua_run`, `dexo_lua_fps165`.
 
+## Input hook
+
+`dexo_input_hook_install()` inline-hooks
+`android::InputConsumer::initializeMotionEvent` in `libinput.so`, using both
+the API < 35 and API >= 35 symbol names. Each `AInputEvent` is passed to
+`ImGui_ImplAndroid_HandleInputEvent` before the original method is called, so
+the reconstructed menu receives touch input.
+
+Export: `dexo_input_hook_install`.
+
 ## Lua state capture
 
 `dexo_lua_capture_install()` installs conservative AArch64 inline hooks on
