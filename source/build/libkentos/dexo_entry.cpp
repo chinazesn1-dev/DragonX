@@ -79,6 +79,7 @@ void ensure_imgui()
     }
     g_dexo_force_lua_inject = dexo_lua_request_inject;
     DEXO_LOGI("gameplay anchor %p", dexo_gameplay_anchor());
+    DEXO_LOGI("lua capture installed=%d", dexo_lua_capture_install());
     g_imgui_ready = true;
     DEXO_LOGI("ImGui backend ready");
 }

@@ -51,6 +51,7 @@ int dexo_lua_bind_state(void* state, void* loadbufferx, void* pcall,
                         void* gettop, void* settop);
 int dexo_lua_run(const char* script, const char* name);
 const char* dexo_lua_fps165();
+int dexo_lua_capture_install();
 
 #ifdef __cplusplus
 }

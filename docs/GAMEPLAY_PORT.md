@@ -132,3 +132,14 @@ game `lua_State`. The menu button executes the original `fps165` chunk
 (`dexo_lua_fps_script()`, `t.MaxFPS 165`).
 
 Exports: `dexo_lua_bind_state`, `dexo_lua_run`, `dexo_lua_fps165`.
+
+## Lua state capture
+
+`dexo_lua_capture_install()` installs conservative AArch64 inline hooks on
+`lua_pcall` and `luaL_loadbufferx` in `libUE4.so`. The first call from the game
+passes its `lua_State` to `dexo_lua_bind`, so the original "waiting for game lua
+activity" behaviour is reproduced without a manual bind. The hook copies the
+first four instructions to an executable trampoline and refuses prologues with
+PC-relative instructions.
+
+Export: `dexo_lua_capture_install`.

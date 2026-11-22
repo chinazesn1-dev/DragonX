@@ -18,8 +18,8 @@ Result:
 | Property | Value |
 | --- | --- |
 | File | `libdexo_kentos.so` |
-| Size | 13,312,496 bytes |
-| SHA-256 | `65a1c0981528f20da9b053cb954adddba6a10804592ecff46beb1cb413bfcfc0` |
+| Size | 13,335,272 bytes |
+| SHA-256 | `8bf19c6e645547b8c4dc3993591eab40a5b0a0dba898b5d0b6461df3e6cd9815` |
 | Machine | AArch64, ELF64 shared object |
 | NEEDED | `libandroid.so`, `libEGL.so`, `libGLESv3.so`, `liblog.so`, `libm.so`, `libdl.so`, `libc.so` |
 
@@ -71,11 +71,14 @@ aimbot through `FindLookAtRotation` + `AddControllerYawInput` /
 `AddControllerPitchInput`. Skin application is ported from `FUN_001f35a0`
 (weapon avatar item array + `DelayHandleAvatarMeshChanged`) and `FUN_001f3898`
 (`VehicleAvatarComponent.ChangeItemAvatar`). `dexo_lua.cpp` binds the game Lua state, resolves
-`luaL_loadbufferx`/`lua_pcall` and executes the original `fps165` chunk.
+`luaL_loadbufferx`/`lua_pcall` and executes the original `fps165` chunk. The
+`dexo_lua_capture_install()` inline hook captures the game `lua_State` on the
+first Lua call.
 `tests/dexo_gameplay_test.cpp` still reports `failures=0`.
 
 Still to verify on a device: the exact UE4 offsets and `ProcessEvent` parameter
 layouts, the Lua state binding, and the runtime behaviour of the source build.
+
 
 
 

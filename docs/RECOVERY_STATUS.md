@@ -85,7 +85,7 @@ The reconstructed app modules are now built by `dexo_kentos`:
 
 | File | Size | SHA-256 |
 | --- | ---: | --- |
-| `dist/source-build/libdexo_kentos.so` | 13,312,496 | `65a1c0981528f20da9b053cb954adddba6a10804592ecff46beb1cb413bfcfc0` |
+| `dist/source-build/libdexo_kentos.so` | 13,335,272 | `8bf19c6e645547b8c4dc3993591eab40a5b0a0dba898b5d0b6461df3e6cd9815` |
 
 Implemented: application state, `cheat_config.json` load/save with the original
 keys, the full AIM/ESP/SETTINGS/SKIN/ACCOUNT/ABOUT menu, a self-contained
@@ -111,8 +111,8 @@ verification and mappings.
 ## Remaining clean-room work
 
 * verify the UE4 offsets and `ProcessEvent` parameter layouts on a real device
-  (no adb device is currently connected), bind the live Lua `lua_State`, and
-  validate the source build in game;
+  (no adb device is currently connected), confirm the Lua inline-hook prologues
+  and captured `lua_State`, and validate the source build in game;
 * replace the statically linked third-party code with the vendored sources at
   matching versions;
 * full symbol and behaviour comparison against the original library.
@@ -120,6 +120,7 @@ verification and mappings.
 The shipped 1.0.2 artifact is the original binary with the two-instruction
 login/licence patch described in `docs/PATCH.md`. The clean-room `dexo_kentos`
 build is a separate, source-level artifact.
+
 
 
 
