@@ -46,6 +46,10 @@ bool dexo_ue4_read_bones(void* actor, DexoPlayer* player);
 /* Compute FindLookAtRotation and feed it through AddControllerYaw/PitchInput. */
 bool dexo_ue4_aim_apply(const DexoVec3& target, float smooth);
 
+/* Skin application, ported from FUN_001f35a0 / FUN_001f3898. */
+bool dexo_ue4_apply_vehicle_skin(void* character, int skin_id);
+bool dexo_ue4_apply_weapon_skin(void* character, int weapon_id, int skin_id);
+
 #ifdef __cplusplus
 extern "C" {
 #endif

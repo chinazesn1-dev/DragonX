@@ -39,6 +39,8 @@ void* g_math_library = nullptr;
 void* g_yaw_function = nullptr;
 void* g_pitch_function = nullptr;
 void* g_rotation_function = nullptr;
+void* g_change_avatar_function = nullptr;
+void* g_delay_avatar_function = nullptr;
 
 std::unordered_map<std::string, void*> g_object_cache;
 std::unordered_map<std::string, uint32_t> g_fname_cache;
@@ -431,6 +433,8 @@ bool dexo_ue4_init(uintptr_t libue4_base)
     g_yaw_function = nullptr;
     g_pitch_function = nullptr;
     g_rotation_function = nullptr;
+    g_change_avatar_function = nullptr;
+    g_delay_avatar_function = nullptr;
     if (g_base == 0) {
         return false;
     }
@@ -823,4 +827,85 @@ extern "C" DEXO_PUBLIC uint32_t dexo_ue4_fname_index(const char* name)
 extern "C" DEXO_PUBLIC int dexo_ue4_aim_at(float x, float y, float z, float smooth)
 {
     return dexo_ue4_aim_apply(DexoVec3(x, y, z), smooth) ? 1 : 0;
+}
+
+bool dexo_ue4_apply_vehicle_skin(void* character, int skin_id)
+{
+    if (character == nullptr || skin_id <= 0) {
+        return false;
+    }
+    ensure_runtime_objects();
+    if (g_change_avatar_function == nullptr) {
+        g_change_avatar_function = find_object_uncached(
+            "Function ShadowTrackerExtra.VehicleAvatarComponent.ChangeItemAvatar");
+    }
+    void* user_component = read_pointer(character, 0xec0);
+    void* avatar = user_component != nullptr ? read_pointer(user_component, 0x1528) : nullptr;
+    if (avatar == nullptr || g_change_avatar_function == nullptr) {
+        return false;
+    }
+    struct ChangeAvatarParams {
+        int item_id;
+        uint8_t force;
+        uint8_t pad[3];
+    } params = {};
+    params.item_id = skin_id;
+    params.force = 1;
+    process_event(avatar, g_change_avatar_function, &params);
+    return true;
+}
+
+bool dexo_ue4_apply_weapon_skin(void* character, int weapon_id, int skin_id)
+{
+    if (character == nullptr || skin_id <= 0) {
+        return false;
+    }
+    ensure_runtime_objects();
+    void* weapon = read_pointer(character, 0x2768);
+    void* avatar = weapon != nullptr ? read_pointer(weapon, 0x5e8) : nullptr;
+    if (avatar == nullptr) {
+        return false;
+    }
+    const int32_t count = read_int32(avatar, 0x830);
+    uint8_t* items = static_cast<uint8_t*>(read_pointer(avatar, 0x828));
+    if (items != nullptr && count > 0) {
+        int slot = -1;
+        int empty_slot = -1;
+        for (int32_t i = 0; i < count; ++i) {
+            const int32_t item = read_int32(items + i * 0x28, 4);
+            if (item == weapon_id) {
+                slot = i;
+                break;
+            }
+            if (empty_slot < 0 && item > 999999) {
+                empty_slot = i;
+            }
+        }
+        if (slot < 0) {
+            slot = empty_slot >= 0 ? empty_slot : 0;
+        }
+        if (slot < count) {
+            std::memcpy(items + slot * 0x28 + 4, &skin_id, sizeof(skin_id));
+        }
+    }
+    if (g_delay_avatar_function == nullptr) {
+        g_delay_avatar_function = find_object_uncached(
+            "Function ShadowTrackerExtra.STExtraWeapon.DelayHandleAvatarMeshChanged");
+    }
+    if (g_delay_avatar_function != nullptr) {
+        uint8_t params[16] = {};
+        process_event(weapon, g_delay_avatar_function, params);
+    }
+    return true;
+}
+
+extern "C" DEXO_PUBLIC int dexo_ue4_apply_vehicle_skin_id(void* character, int skin_id)
+{
+    return dexo_ue4_apply_vehicle_skin(character, skin_id) ? 1 : 0;
+}
+
+extern "C" DEXO_PUBLIC int dexo_ue4_apply_weapon_skin_id(void* character, int weapon_id,
+                                                         int skin_id)
+{
+    return dexo_ue4_apply_weapon_skin(character, weapon_id, skin_id) ? 1 : 0;
 }

@@ -109,6 +109,19 @@ the Smooth value. The original yaw/pitch wrappers are `FUN_002664bc` and
 
 Export: `dexo_ue4_aim_at`.
 
+## Skin application
+
+`dexo_ue4_apply_vehicle_skin()` mirrors `FUN_001f3898`: it reads the vehicle
+user component at `character + 0xec0`, the avatar at `+0x1528`, and calls
+`VehicleAvatarComponent.ChangeItemAvatar(item_id, true)`.
+
+`dexo_ue4_apply_weapon_skin()` mirrors `FUN_001f35a0`: it reads the held weapon
+at `character + 0x2768`, the avatar at `+0x5e8`, writes the skin item id into the
+avatar item array (`+0x828`, stride `0x28`, field `+4`) and calls
+`STExtraWeapon.DelayHandleAvatarMeshChanged`.
+
+Exports: `dexo_ue4_apply_vehicle_skin_id`, `dexo_ue4_apply_weapon_skin_id`.
+
 ## Lua execution
 
 `dexo_lua_execute()` mirrors the original injector `FUN_00267b1c`:

@@ -36,6 +36,7 @@ bool g_imgui_ready = false;
 bool g_config_loaded = false;
 bool g_ue4_initialized = false;
 double g_last_world_refresh = 0.0;
+double g_last_skin_apply = 0.0;
 DexoWorld g_world;
 
 bool ensure_ue4()
@@ -115,6 +116,14 @@ EGLBoolean swap_buffers_hook(EGLDisplay display, EGLSurface surface)
                 if (now - g_last_world_refresh >= 0.1) {
                     dexo_ue4_read_world(&g_world, g_dexo_app.aim, g_dexo_app.esp);
                     g_last_world_refresh = now;
+                }
+                if (g_dexo_app.skin.enable && g_dexo_app.skin.vehicle > 0 &&
+                    now - g_last_skin_apply >= 2.0) {
+                    void* local_player = dexo_ue4_local_player();
+                    if (local_player != nullptr &&
+                        dexo_ue4_apply_vehicle_skin(local_player, g_dexo_app.skin.vehicle)) {
+                        g_last_skin_apply = now;
+                    }
                 }
                 DexoProjector projector;
                 projector.project = &ue4_project_adapter;

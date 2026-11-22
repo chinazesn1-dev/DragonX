@@ -18,8 +18,8 @@ Result:
 | Property | Value |
 | --- | --- |
 | File | `libdexo_kentos.so` |
-| Size | 13,297,960 bytes |
-| SHA-256 | `47fb636eb54a148282f1e22498911bbe93076bf84a0f01fd4ed10a27fed1dd0d` |
+| Size | 13,312,496 bytes |
+| SHA-256 | `65a1c0981528f20da9b053cb954adddba6a10804592ecff46beb1cb413bfcfc0` |
 | Machine | AArch64, ELF64 shared object |
 | NEEDED | `libandroid.so`, `libEGL.so`, `libGLESv3.so`, `liblog.so`, `libm.so`, `libdl.so`, `libc.so` |
 
@@ -68,12 +68,15 @@ KENTOS skin system
 `ProcessEvent`, entity list, `GetBoneLocation`, `GetDistanceTo`,
 `LineOfSightTo`, `ProjectWorldToScreen`), feeds the ESP renderer and applies the
 aimbot through `FindLookAtRotation` + `AddControllerYawInput` /
-`AddControllerPitchInput`. `dexo_lua.cpp` binds the game Lua state, resolves
+`AddControllerPitchInput`. Skin application is ported from `FUN_001f35a0`
+(weapon avatar item array + `DelayHandleAvatarMeshChanged`) and `FUN_001f3898`
+(`VehicleAvatarComponent.ChangeItemAvatar`). `dexo_lua.cpp` binds the game Lua state, resolves
 `luaL_loadbufferx`/`lua_pcall` and executes the original `fps165` chunk.
 `tests/dexo_gameplay_test.cpp` still reports `failures=0`.
 
 Still to verify on a device: the exact UE4 offsets and `ProcessEvent` parameter
 layouts, the Lua state binding, and the runtime behaviour of the source build.
+
 
 
 
