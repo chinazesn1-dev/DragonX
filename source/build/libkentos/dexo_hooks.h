@@ -1,6 +1,8 @@
 #ifndef RECOVERED_KENTOS_DEXO_HOOKS_H
 #define RECOVERED_KENTOS_DEXO_HOOKS_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,6 +23,9 @@ int dexo_hook_symbol_all(const char* symbol, void* replacement, void** original)
 
 /* Returns 1 when a module with this basename is currently loaded. */
 int dexo_module_loaded(const char* module_name);
+
+/* Returns the load base of a module, or 0 when it is not loaded. */
+uintptr_t dexo_module_base(const char* module_name);
 
 #ifdef __cplusplus
 }

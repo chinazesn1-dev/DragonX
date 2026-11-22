@@ -72,6 +72,13 @@ The validation object is a functional subset, not a replacement for the full
 library. Byte-identical rebuilding remains a separate task because the original
 object files and Obfuscator-LLVM configuration are unavailable.
 
+## Device confirmation
+
+On 2026-11-22 the CRACK_DEXOv2 online loader downloaded release 1.0.2 on the
+device, replaced the libraries and started the game. The DEXO login window did
+not appear and the main menu opened immediately. This confirms the shipped
+binary path (items 2 and 3) end-to-end.
+
 ## Compilable source build
 
 The reconstructed app modules are now built by `dexo_kentos`:

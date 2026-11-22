@@ -63,12 +63,30 @@ bool dexo_world_to_screen(const DexoMat4& view_projection, const DexoVec3& world
     return true;
 }
 
-const DexoPlayer* dexo_select_aim_target(const DexoWorld& world,
-                                         const DexoMat4& view_projection,
-                                         const DexoAimbotConfig& config,
-                                         DexoVec2 crosshair,
-                                         int screen_width, int screen_height,
-                                         float* out_screen_distance)
+namespace {
+
+bool matrix_project(const DexoVec3& world, int screen_width, int screen_height,
+                    DexoVec2* out, void* context)
+{
+    return dexo_world_to_screen(*static_cast<const DexoMat4*>(context), world,
+                                screen_width, screen_height, out);
+}
+
+bool project_point(const DexoProjector& projector, const DexoVec3& world,
+                   int screen_width, int screen_height, DexoVec2* out)
+{
+    return projector.project != nullptr &&
+           projector.project(world, screen_width, screen_height, out, projector.context);
+}
+
+}  // namespace
+
+const DexoPlayer* dexo_select_aim_target_projected(const DexoWorld& world,
+                                                   const DexoProjector& projector,
+                                                   const DexoAimbotConfig& config,
+                                                   DexoVec2 crosshair,
+                                                   int screen_width, int screen_height,
+                                                   float* out_screen_distance)
 {
     const DexoPlayer* best = nullptr;
     float best_distance = FLT_MAX;
@@ -98,10 +116,8 @@ const DexoPlayer* dexo_select_aim_target(const DexoWorld& world,
         DexoVec3 head = player.bones.count("Head") != 0 ? player.bones.at("Head") : player.head;
         DexoVec2 root_screen;
         DexoVec2 head_screen;
-        if (!dexo_world_to_screen(view_projection, root, screen_width, screen_height,
-                                  &root_screen) ||
-            !dexo_world_to_screen(view_projection, head, screen_width, screen_height,
-                                  &head_screen)) {
+        if (!project_point(projector, root, screen_width, screen_height, &root_screen) ||
+            !project_point(projector, head, screen_width, screen_height, &head_screen)) {
             continue;
         }
         const DexoVec2 center = midpoint(root_screen, head_screen);
@@ -120,9 +136,25 @@ const DexoPlayer* dexo_select_aim_target(const DexoWorld& world,
     return best;
 }
 
-bool dexo_build_player_esp(const DexoPlayer& player, const DexoMat4& view_projection,
-                           int screen_width, int screen_height,
-                           const DexoEspConfig& config, DexoEspBox* out)
+const DexoPlayer* dexo_select_aim_target(const DexoWorld& world,
+                                         const DexoMat4& view_projection,
+                                         const DexoAimbotConfig& config,
+                                         DexoVec2 crosshair,
+                                         int screen_width, int screen_height,
+                                         float* out_screen_distance)
+{
+    DexoProjector projector;
+    projector.project = &matrix_project;
+    projector.context = const_cast<DexoMat4*>(&view_projection);
+    return dexo_select_aim_target_projected(world, projector, config, crosshair,
+                                            screen_width, screen_height,
+                                            out_screen_distance);
+}
+
+bool dexo_build_player_esp_projected(const DexoPlayer& player,
+                                     const DexoProjector& projector,
+                                     int screen_width, int screen_height,
+                                     const DexoEspConfig& config, DexoEspBox* out)
 {
     if (out == nullptr) {
         return false;
@@ -130,12 +162,10 @@ bool dexo_build_player_esp(const DexoPlayer& player, const DexoMat4& view_projec
     *out = DexoEspBox{};
     DexoVec2 root_screen;
     DexoVec2 head_screen;
-    if (!dexo_world_to_screen(view_projection, player.root, screen_width, screen_height,
-                              &root_screen)) {
+    if (!project_point(projector, player.root, screen_width, screen_height, &root_screen)) {
         return false;
     }
-    if (!dexo_world_to_screen(view_projection, player.head, screen_width, screen_height,
-                              &head_screen)) {
+    if (!project_point(projector, player.head, screen_width, screen_height, &head_screen)) {
         return false;
     }
 
@@ -182,15 +212,24 @@ bool dexo_build_player_esp(const DexoPlayer& player, const DexoMat4& view_projec
             }
             DexoVec2 a;
             DexoVec2 b;
-            if (dexo_world_to_screen(view_projection, first->second,
-                                     screen_width, screen_height, &a) &&
-                dexo_world_to_screen(view_projection, second->second,
-                                     screen_width, screen_height, &b)) {
+            if (project_point(projector, first->second, screen_width, screen_height, &a) &&
+                project_point(projector, second->second, screen_width, screen_height, &b)) {
                 out->bones.emplace_back(a, b);
             }
         }
     }
     return true;
+}
+
+bool dexo_build_player_esp(const DexoPlayer& player, const DexoMat4& view_projection,
+                           int screen_width, int screen_height,
+                           const DexoEspConfig& config, DexoEspBox* out)
+{
+    DexoProjector projector;
+    projector.project = &matrix_project;
+    projector.context = const_cast<DexoMat4*>(&view_projection);
+    return dexo_build_player_esp_projected(player, projector, screen_width, screen_height,
+                                           config, out);
 }
 
 bool dexo_project_vehicle(const DexoVehicle& vehicle, const DexoMat4& view_projection,

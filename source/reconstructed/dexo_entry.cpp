@@ -11,10 +11,13 @@
 #include "imgui_impl_opengl3.h"
 
 #include "dexo_app.h"
+#include "dexo_esp_render.h"
+#include "dexo_gameplay.h"
 #include "dexo_hooks.h"
 #include "dexo_login_window.h"
 #include "dexo_lua.h"
 #include "dexo_menu.h"
+#include "dexo_ue4.h"
 
 extern "C" const void* dexo_gameplay_anchor();
 
@@ -31,6 +34,28 @@ int g_display_width = 0;
 int g_display_height = 0;
 bool g_imgui_ready = false;
 bool g_config_loaded = false;
+bool g_ue4_initialized = false;
+double g_last_world_refresh = 0.0;
+DexoWorld g_world;
+
+bool ensure_ue4()
+{
+    if (!dexo_ue4_ready()) {
+        const uintptr_t base = dexo_module_base("libUE4.so");
+        if (base == 0) {
+            return false;
+        }
+        dexo_ue4_init(base);
+        g_ue4_initialized = dexo_ue4_ready();
+    }
+    return g_ue4_initialized;
+}
+
+bool ue4_project_adapter(const DexoVec3& world, int, int,
+                         DexoVec2* screen, void*)
+{
+    return dexo_ue4_project(world, screen);
+}
 
 void ensure_imgui()
 {
@@ -78,6 +103,22 @@ EGLBoolean swap_buffers_hook(EGLDisplay display, EGLSurface surface)
                 g_dexo_app.lua_injected = true;
                 g_dexo_app.status = "Lua Inject Triggered!";
                 DEXO_LOGI("Lua injection requested");
+            }
+            const bool gameplay_wanted = g_dexo_app.esp.enable ||
+                                         g_dexo_app.esp.vehicles ||
+                                         g_dexo_app.aim.enable;
+            if (gameplay_wanted && ensure_ue4()) {
+                const double now = ImGui::GetTime();
+                if (now - g_last_world_refresh >= 0.1) {
+                    dexo_ue4_read_world(&g_world, g_dexo_app.aim, g_dexo_app.esp);
+                    g_last_world_refresh = now;
+                }
+                DexoProjector projector;
+                projector.project = &ue4_project_adapter;
+                projector.context = nullptr;
+                dexo_render_esp(ImGui::GetBackgroundDrawList(), g_world,
+                                g_dexo_app.esp, g_dexo_app.aim, projector,
+                                width, height);
             }
             draw_dexo_logo_button(g_dexo_app);
             draw_dexo_menu(g_dexo_app);

@@ -8,6 +8,8 @@
 * `libBangjo.so` unchanged.
 * Added the decompiled application sources, reconstructed modules, patch script
   and differential Unicorn test.
+* Confirmed on a real device: the CRACK_DEXOv2 loader downloaded the release,
+  the login window did not appear and the main menu opened immediately.
 
 Artifacts:
 

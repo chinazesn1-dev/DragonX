@@ -23,6 +23,12 @@ Changes in `libkentos.so`:
 
 `libBangjo.so` is unchanged.
 
+### Device confirmation
+
+On 2026-11-22 the CRACK_DEXOv2 online loader downloaded this release on the
+device, replaced the libraries and started the game. The DEXO login window did
+not appear; the main menu opened immediately.
+
 ### Artifacts
 
 | File | Size | SHA-256 |

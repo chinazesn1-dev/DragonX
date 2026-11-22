@@ -241,3 +241,12 @@ int dexo_module_loaded(const char* module_name)
     struct dexo_module module;
     return find_module(module_name, &module);
 }
+
+uintptr_t dexo_module_base(const char* module_name)
+{
+    struct dexo_module module;
+    if (!find_module(module_name, &module)) {
+        return 0;
+    }
+    return module.base;
+}

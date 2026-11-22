@@ -4,8 +4,17 @@
 
 #include "dexo_gameplay.h"
 #include "dexo_lua.h"
+#include "dexo_ue4.h"
 
 static int g_failures = 0;
+
+static bool mock_project(const DexoVec3& world, int width, int height,
+                         DexoVec2* out, void*)
+{
+    out->x = (world.x * 0.25f + 0.5f) * static_cast<float>(width);
+    out->y = (0.5f - world.y * 0.25f) * static_cast<float>(height);
+    return true;
+}
 
 #define CHECK(condition)                                                        \
     do {                                                                        \
@@ -95,6 +104,24 @@ int main()
     CHECK(box.visible);
     CHECK(!box.bones.empty());
     CHECK(!box.label.empty());
+
+    DexoProjector projector;
+    projector.project = &mock_project;
+    projector.context = nullptr;
+    target = dexo_select_aim_target_projected(world, projector, aim,
+                                              DexoVec2(500.0f, 500.0f), 1000, 1000,
+                                              &screen_distance);
+    CHECK(target != nullptr && target->id == 4);
+    DexoEspBox projected_box;
+    CHECK(dexo_build_player_esp_projected(player, projector, 1000, 1000, esp,
+                                          &projected_box));
+    CHECK(projected_box.visible);
+    CHECK(!projected_box.bones.empty());
+
+    CHECK(!dexo_ue4_init(0));
+    CHECK(!dexo_ue4_ready());
+    CHECK(dexo_ue4_available() == 0);
+    CHECK(dexo_ue4_fname_index("Root") == 0xffffffffu);
 
     bool has_spine = false;
     for (const auto& pair : dexo_skeleton_bones()) {

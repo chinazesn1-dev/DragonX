@@ -79,6 +79,13 @@ struct DexoEspBox {
 bool dexo_world_to_screen(const DexoMat4& view_projection, const DexoVec3& world,
                           int screen_width, int screen_height, DexoVec2* out);
 
+/* Abstraction over a matrix projector or the live UE4 ProjectWorldToScreen. */
+struct DexoProjector {
+    bool (*project)(const DexoVec3& world, int screen_width, int screen_height,
+                    DexoVec2* out, void* context) = nullptr;
+    void* context = nullptr;
+};
+
 /* Port of FUN_001dbdd8: nearest visible enemy head/root centre inside the FOV. */
 const DexoPlayer* dexo_select_aim_target(const DexoWorld& world,
                                          const DexoMat4& view_projection,
@@ -87,10 +94,22 @@ const DexoPlayer* dexo_select_aim_target(const DexoWorld& world,
                                          int screen_width, int screen_height,
                                          float* out_screen_distance = nullptr);
 
+const DexoPlayer* dexo_select_aim_target_projected(const DexoWorld& world,
+                                                   const DexoProjector& projector,
+                                                   const DexoAimbotConfig& config,
+                                                   DexoVec2 crosshair,
+                                                   int screen_width, int screen_height,
+                                                   float* out_screen_distance = nullptr);
+
 /* Builds the 2D box, skeleton segments and labels for one player. */
 bool dexo_build_player_esp(const DexoPlayer& player, const DexoMat4& view_projection,
                            int screen_width, int screen_height,
                            const DexoEspConfig& config, DexoEspBox* out);
+
+bool dexo_build_player_esp_projected(const DexoPlayer& player,
+                                     const DexoProjector& projector,
+                                     int screen_width, int screen_height,
+                                     const DexoEspConfig& config, DexoEspBox* out);
 
 bool dexo_project_vehicle(const DexoVehicle& vehicle, const DexoMat4& view_projection,
                           int screen_width, int screen_height, DexoVec2* out);
