@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
-"""Create the login-free libkentos.so patch.
+"""Create the login-free, Bangjo-enabled libkentos.so patch.
 
 Patch 1 (0xec878): replace `cbz w8, 0xec8b0` (jump to the login window) with NOP.
 Patch 2 (0xe8780): replace the licence-check entry with `mov w0,#1; ret`.
+Patch 3 (0xd8368): NOP `bl plthook_replace(handle, "glDrawElements", ret_stub, &old)`.
+
+Patch 3 is required for the ESP/overlay: libkentos opens a plthook handle for
+libBangjo.so and replaces its glDrawElements GOT slot (relocation
+glDrawElements at 0x7d4af8 inside libBangjo) with a bare `ret`, which turns
+every draw call of the engine into a no-op.  The engine keeps its real
+glDrawElements once this call is skipped; libkentos keeps its own PLT entry,
+so the menu still renders.
 """
 from __future__ import annotations
 
@@ -24,6 +32,7 @@ RET = 0xD65F03C0
 PATCHES = {
     0xEC878: struct.pack("<I", NOP),
     0xE8780: struct.pack("<II", MOV_W0_1, RET),
+    0xD8368: struct.pack("<I", NOP),
 }
 
 
