@@ -26,6 +26,17 @@ Verification (`tools/probe_auth_trampoline.py`, Unicorn):
 1.0.5: body_entered=True  reached_tail=True  sp_balanced=True  w0=1 steps=28
 ```
 
+Side effect check (`tools/probe_auth_side_effect.py`, Unicorn, 32 bytes at
+`DAT_0082f8d0`):
+
+```text
+original  initialized=True   after: 0b0e151208131e09760b1a151e177608121c760d6a5b...
+1.0.3     initialized=False  after: 00000000...
+1.0.5     initialized=True   after: 0b0e151208131e09760b1a151e177608121c760d6a5b...
+```
+
+1.0.5 reproduces the original bytes exactly.
+
 Artifacts:
 
 | File | Size | SHA-256 |
