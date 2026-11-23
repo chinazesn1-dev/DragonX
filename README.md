@@ -13,6 +13,38 @@ https://github.com/chinazesn1-dev/DragonX/releases/latest/download/libBangjo.so
 non-prerelease) release, so publishing a new release is enough for the loader to
 pick the files up on its next start.
 
+## Version 1.0.3
+
+Changes in `libkentos.so`:
+
+* Fixed why every menu toggle had no visible effect.
+* `libkentos.so` opened a plthook handle for `libBangjo.so` and replaced the
+  engine's `glDrawElements` GOT slot (relocation `glDrawElements` at `0x7d4af8`
+  inside `libBangjo.so`) with a bare `ret`, so every draw call of the engine
+  became a no-op.
+* The libkentos overlay renderer `FUN_001dcdb0` (ELF `0xdcdb0`) is gated by
+  `[0x72f468]`, a `.bss` byte that is never written anywhere in the library, so
+  it could not draw either.
+* Patch `0xd8368`: `plthook_replace(handle, "glDrawElements", ret_stub, &old)`
+  is replaced with `nop`. `libkentos.so` keeps its own PLT entry, so the DEXO
+  menu still renders, and the engine keeps its real `glDrawElements`.
+* The 1.0.2 login bypass is kept (`0xe8780` -> `mov w0,#1; ret`,
+  `0xec878` -> `nop`).
+
+`libBangjo.so` is unchanged.
+
+### Device confirmation
+
+On 2026-11-23 the loader detected the new size, downloaded `Component 2 of 2`
+(7.1 MB) and restarted the game with the patched library.
+
+### Artifacts
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,872 | `37300e5f40c7e45915f742f5cbba247891e432054eeaaeb64a7ded7e0d3d3b2f` |
+| `libBangjo.so` | 9,023,528 | `c5b4aa2be47d87dd595ba328fce6ebcd34851ad5eefda0257ce236a3df23aefc` |
+
 ## Version 1.0.2
 
 Changes in `libkentos.so`:
