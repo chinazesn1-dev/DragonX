@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.0.7
+
+* Enables the feature code by forcing the licence flag `DAT_0082f2c0` to 1.
+* Without a key the login path never runs, so the flag (ELF `0x72f2c0`) stayed 0. The licensed original has it at 1 and every feature gate reads it.
+* Forced at all three read sites: `0xdcdf4` (game overlay: ESP, FOV, aimbot), `0xe5220` (status path), `0xe88b4` (licence routine body) - each `ldrb w8,[x8,#704]` -> `mov w8,#1`.
+* Keeps the 1.0.6 trampoline (body runs, verdict 1) and the login window nop.
+
+Verification (Unicorn): 271 steps, `DAT_0082f8d0` bytes identical to the original.
+
+Artifacts:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,856 | `e40f38eb1e6fa5077697672d6e4e33e0337fff5094f73de4f61f21aa07d5939f` |
+| `libBangjo.so` | 9,023,560 | `03c8b955d0b69a5992b3b2e45a683e5ebfbf635e0434fb1e493e976b77739697` |
+
 ## 1.0.6
 
 * Fixes the 1.0.5 freeze before the login screen.
@@ -145,3 +161,4 @@ Artifacts:
 ## 1.0.1
 
 * Previous DEXO online libraries.
+
