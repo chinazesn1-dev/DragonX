@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.8
+
+* Removes the spurious "Server did not respond. Return to the login page and retry." dialog that appeared over a working lobby and deadlocked the game when its OK button was pressed.
+* Cause: the DEXO Lua bypass replaces `login_module.reqLoginLobby` and arms a 20 second `AddTimerOnce` that calls `self:LoginTimeOut()`. The login response arrives (the lobby is loaded) but that timer is never cancelled.
+* Fix: the single `self:LoginTimeOut()` call inside the timer is commented out in place (`self:LoginTimeOut()` -> `-- no login timeout`, same 19 bytes), so nothing else in the ELF moves.
+* libkentos.so is unchanged from 1.0.7 (licence bypass + forced feature flag).
+
+Artifacts:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,856 | `e40f38eb1e6fa5077697672d6e4e33e0337fff5094f73de4f61f21aa07d5939f` |
+| `libBangjo.so` | 9,023,592 | `92a4d829531efba69a4693bda88315feb46a5cb13dc4249e7b39be46c96e0562` |
+
 ## 1.0.7
 
 * Enables the feature code by forcing the licence flag `DAT_0082f2c0` to 1.
