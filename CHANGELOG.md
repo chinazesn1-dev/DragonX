@@ -14,6 +14,16 @@
 * `libkentos.so` is the 1.0.3 build (login bypass + `0xd8368` nop) and is
   unchanged in this release.
 
+Verification (`tools/probe_bangjo_config.py`, Unicorn, `w0 = 0`):
+
+```text
+original  path_branch=False pkg_branch=True  assign_arg=none     done=False
+patched   path_branch=True  pkg_branch=False assign_arg=0x16a5ef done=True
+```
+
+`0x16a5ef` is the `/sdcard/config.txt` literal, so the patched resolver really
+returns that path.
+
 Artifacts:
 
 | File | Size | SHA-256 |
