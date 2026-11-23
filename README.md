@@ -13,6 +13,25 @@ https://github.com/chinazesn1-dev/DragonX/releases/latest/download/libBangjo.so
 non-prerelease) release, so publishing a new release is enough for the loader to
 pick the files up on its next start.
 
+## Version 1.0.4
+
+Changes in `libBangjo.so`:
+
+* The engine config path resolver at `0x481e14` chooses between
+  `/sdcard/config.txt` and `/sdcard/Android/data/<package>/files/config.txt`.
+  The package derived file does not exist on the device, so the engine never
+  read a configuration.
+* Patch `0x481e48`: `tbz w0, #0, 0x481e80` -> `nop`, so the resolver always
+  returns `/sdcard/config.txt` (writable without root).
+* Both branches converge at `0x481edc`, so the change is balanced.
+
+`libkentos.so` is the 1.0.3 build (login bypass plus `0xd8368` nop).
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,872 | `37300e5f40c7e45915f742f5cbba247891e432054eeaaeb64a7ded7e0d3d3b2f` |
+| `libBangjo.so` | 9,023,560 | `03c8b955d0b69a5992b3b2e45a683e5ebfbf635e0434fb1e493e976b77739697` |
+
 ## Version 1.0.3
 
 Changes in `libkentos.so`:

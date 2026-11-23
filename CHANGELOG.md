@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.4
+
+* First real patch inside `libBangjo.so` (the release 1.0.3 shipped it unchanged).
+* Root cause: the engine config path resolver at `0x481e14` picks between
+  `/sdcard/config.txt` and `/sdcard/Android/data/<package>/files/config.txt`.
+  On the device the package derived file does not exist, so the engine never
+  read a configuration at all.
+* Patch `0x481e48`: `tbz w0, #0, 0x481e80` is replaced with `nop`, so the
+  resolver always returns `/sdcard/config.txt`, a stable path that is writable
+  without root. Both branches converge at `0x481edc` and destroy the temporary
+  package string, so the change is balanced.
+* `libkentos.so` is the 1.0.3 build (login bypass + `0xd8368` nop) and is
+  unchanged in this release.
+
+Artifacts:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,872 | `37300e5f40c7e45915f742f5cbba247891e432054eeaaeb64a7ded7e0d3d3b2f` |
+| `libBangjo.so` | 9,023,560 | `03c8b955d0b69a5992b3b2e45a683e5ebfbf635e0434fb1e493e976b77739697` |
+
 ## 1.0.3
 
 * Fixed why every menu toggle had no visible effect.
