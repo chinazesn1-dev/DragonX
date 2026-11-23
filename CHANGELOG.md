@@ -1,5 +1,38 @@
 # Changelog
 
+## 1.0.5
+
+* Fixes the regression introduced in 1.0.2/1.0.3: the menu opened but every
+  feature stayed dead.
+* Root cause: `FUN_001e8780` is not a pure licence predicate. Before any key
+  check it performs a one time initialisation and decrypts the static string at
+  `DAT_0082f8d0` (`__cxa_guard_acquire` + `FUN_001f58d0`). That string is read
+  by 60+ sites outside the function (`0xe8b70`, `0xe8db0`, `0xea610`, ...), so
+  the rest of the library consumes it.
+* The old patch replaced the whole entry with `mov w0,#1; ret`, so the
+  initialisation never ran and the rest of the library worked on undecrypted
+  data. The menu still drew; every feature did not.
+* New patch: entry `0xe8780` jumps to a trampoline in the code cave at
+  `0xda47c`, which replays the two displaced prologue instructions, calls the
+  real body at `0xe8788` (all side effects happen) and then overrides the
+  result with `1`.
+* The 1.0.3 change at `0xd8368` is reverted, because the unmodified library
+  works on the device and that call belongs to the original behaviour.
+
+Verification (`tools/probe_auth_trampoline.py`, Unicorn):
+
+```text
+1.0.3: body_entered=False reached_tail=False sp_balanced=False w0=1 steps=2
+1.0.5: body_entered=True  reached_tail=True  sp_balanced=True  w0=1 steps=28
+```
+
+Artifacts:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,824 | `04cff22ad4bd47a3a50edb5855857c28f4f96d0b4c22e246b1ea918839cbff40` |
+| `libBangjo.so` | 9,023,560 | `03c8b955d0b69a5992b3b2e45a683e5ebfbf635e0434fb1e493e976b77739697` |
+
 ## 1.0.4
 
 * First real patch inside `libBangjo.so` (the release 1.0.3 shipped it unchanged).

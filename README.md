@@ -13,6 +13,31 @@ https://github.com/chinazesn1-dev/DragonX/releases/latest/download/libBangjo.so
 non-prerelease) release, so publishing a new release is enough for the loader to
 pick the files up on its next start.
 
+## Version 1.0.5
+
+Fixes the 1.0.2/1.0.3 regression (menu worked, features did not).
+
+* `FUN_001e8780` also performs a one time init and decrypts `DAT_0082f8d0`,
+  which 60+ sites outside the function read. Replacing the whole entry with
+  `mov w0,#1; ret` skipped that, so the rest of the library used undecrypted
+  data.
+* New patch: entry `0xe8780` jumps to a trampoline at `0xda47c` that replays the
+  two displaced prologue instructions, calls the real body at `0xe8788`, then
+  forces the result to `1`.
+* `0xd8368` is back to the original `bl` (the unmodified library works).
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,824 | `04cff22ad4bd47a3a50edb5855857c28f4f96d0b4c22e246b1ea918839cbff40` |
+| `libBangjo.so` | 9,023,560 | `03c8b955d0b69a5992b3b2e45a683e5ebfbf635e0434fb1e493e976b77739697` |
+
+`tools/probe_auth_trampoline.py` (Unicorn) shows the difference:
+
+```text
+1.0.3: body_entered=False reached_tail=False sp_balanced=False w0=1 steps=2
+1.0.5: body_entered=True  reached_tail=True  sp_balanced=True  w0=1 steps=28
+```
+
 ## Version 1.0.4
 
 Changes in `libBangjo.so`:
