@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.0.6
+
+* Fixes the 1.0.5 freeze before the login screen.
+* Cause: the 1.0.5 trampoline did `bl body`, which overwrites `x30` with the
+  return address into the cave. The body saves and restores that same `x30`, so
+  its `ret` returned into the cave again; `mov w0,#1; ret` jumped there again -
+  an endless loop on the render thread.
+* Fixed trampoline: it allocates `0x40`, keeps the caller `x30` in the spare
+  `[sp+0x30]` slot (the body only uses `[sp .. sp+0x2F]`), restores it after the
+  body returns, forces `w0 = 1` and releases the extra `0x10`.
+* Login bypass and the `DAT_0082f8d0` initialisation are unchanged.
+
+Verification (Unicorn):
+
+```text
+original: 264 steps, DAT_0082f8d0 = 0b0e151208131e09...
+1.0.5:    20001 steps (loop)  <- the freeze
+1.0.6:    271 steps,  DAT_0082f8d0 = 0b0e151208131e09... (identical)
+```
+
+Artifacts:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,840 | `88d0696a0ffb525c7b51c2402dd76314b9c37c76619598d04f60e5036438064d` |
+| `libBangjo.so` | 9,023,560 | `03c8b955d0b69a5992b3b2e45a683e5ebfbf635e0434fb1e493e976b77739697` |
+
 ## 1.0.5
 
 * Fixes the regression introduced in 1.0.2/1.0.3: the menu opened but every
