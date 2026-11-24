@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.10
+
+* Restores the lobby login. The cheat re-runs `ClientEntryBypass()` every 2 seconds (`AddTimerLoop(2.0, StartBypass_VIP_v4, -1, 1)`), and it calls `lolol()`, which sets `login_module.reqLoginLobby = function() return 0 end`. That is an anti-ban measure: no repeated login packets and no reaction to login failures. Side effect: the real lobby login never goes out, the game watchdog shows "Сервер не ответил. Вернитесь на страницу входа и повторите попытку.", and OK deadlocks on the disabled login.
+* Fix: `lolol()` now silences `LoginTimeOut` instead of `reqLoginLobby` (`login_module.LoginTimeOut  = function() return 0 end`, same 52 bytes). The lobby login implementation survives and the dialog can no longer be raised.
+* The late bypass list in the third Lua chunk is patched the same way, and the 20 second timer body is still commented out.
+* After the patch `reqLoginLobby` appears exactly once in the file (the real implementation), with zero active `self:LoginTimeOut()` calls.
+
+Artifacts:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,856 | `e40f38eb1e6fa5077697672d6e4e33e0337fff5094f73de4f61f21aa07d5939f` |
+| `libBangjo.so` | 9,023,656 | `a91f3488d5f1d9d561216c2394a83aaad043e65352e2174d440ad6b3673912da` |
+
 ## 1.0.9
 
 * The 1.0.8 attempt edited the wrong copy of the login bypass. The DEXO Lua payload is one long script and a later block re-disables the login entry points:
