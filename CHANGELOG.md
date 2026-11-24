@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.9
+
+* The 1.0.8 attempt edited the wrong copy of the login bypass. The DEXO Lua payload is one long script and a later block re-disables the login entry points:
+
+```lua
+local funcs = { ... "PakMonitorStart", "reqLoginLobby", ... }
+for _, f in ipairs(funcs) do lm[f] = function() return 0 end end
+```
+
+* So `reqLoginLobby` became a no-op: the lobby login request was never sent, the account panel still opened from cached data, and the game login watchdog showed "Сервер не ответил. Вернитесь на страницу входа и повторите попытку.". Its OK button then deadlocked on the disabled login.
+* Fix: that list entry now names `LoginTimeOut` instead of `reqLoginLobby` (`"PakMonitorStart", "reqLoginLobby"` -> `"PakMonitorStart" , "LoginTimeOut"`, same 34 bytes). The real lobby login runs again, and the timeout dialog can no longer appear.
+
+Artifacts:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,856 | `e40f38eb1e6fa5077697672d6e4e33e0337fff5094f73de4f61f21aa07d5939f` |
+| `libBangjo.so` | 9,023,624 | `a2ffd40367d13373b3073ac98a9bced14ece3fec1f33ced9107a0f1358b22801` |
+
 ## 1.0.8
 
 * Removes the spurious "Server did not respond. Return to the login page and retry." dialog that appeared over a working lobby and deadlocked the game when its OK button was pressed.
