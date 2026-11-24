@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.12
+
+* The original DEXO never showed the dialog. It silenced `reqLoginLobby` before the game used it, so no login packet was sent and the engine never armed its timeout. Our 1.0.9/1.0.10 attempts restored the real login and therefore created the watchdog condition.
+* Fix: the `LoginHandler.send_login(...)` call inside the replacement `reqLoginLobby` is replaced by a Lua comment of exactly the same length (139 bytes). The function now returns without touching the network, so the engine-side login timeout cannot be armed at all.
+* The lobby is opened from cached data exactly as in the original build; the cheat menu and FOV are unaffected.
+* All 1.0.11 edits are kept. Asset size is unique (32 bytes above 1.0.11).
+
+Artifacts:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,856 | `e40f38eb1e6fa5077697672d6e4e33e0337fff5094f73de4f61f21aa07d5939f` |
+| `libBangjo.so` | 9,023,752 | `25871d99c901f0260b6d83c262c539e39bab54a1d072d1ee6a5bad73c1a83d7b` |
+
 ## 1.0.11
 
 * 1.0.10 silenced every Lua writer of the timeout dialog, yet the dialog still appeared on top of a fully loaded lobby. The remaining source is the engine-side login watchdog, armed inside the replacement `reqLoginLobby` by `NetUtil.StartCheckLoginRsp()` at `0x111e93`.
