@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.11
+
+* 1.0.10 silenced every Lua writer of the timeout dialog, yet the dialog still appeared on top of a fully loaded lobby. The remaining source is the engine-side login watchdog, armed inside the replacement `reqLoginLobby` by `NetUtil.StartCheckLoginRsp()` at `0x111e93`.
+* Fix: that call is replaced in place with a Lua comment (`NetUtil.StartCheckLoginRsp()` -> `-- no login watchdog check  `, same 28 bytes). The login packet is still sent and the lobby still loads, but the native watchdog can no longer raise the "Server did not respond" notification.
+* All 1.0.10 edits are kept: the real `reqLoginLobby` survives, the 20 second timer body is commented out, and both silent-function lists name `LoginTimeOut`.
+* The asset is 32 bytes longer than 1.0.10 so the loader sees a new size and downloads it.
+
+Artifacts:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `libkentos.so` | 7,465,856 | `e40f38eb1e6fa5077697672d6e4e33e0337fff5094f73de4f61f21aa07d5939f` |
+| `libBangjo.so` | 9,023,688 | `1845669d636735883ff108f443677c2be153e952ce05822a806e63e47dd36609` |
+
 ## 1.0.10
 
 * Restores the lobby login. The cheat re-runs `ClientEntryBypass()` every 2 seconds (`AddTimerLoop(2.0, StartBypass_VIP_v4, -1, 1)`), and it calls `lolol()`, which sets `login_module.reqLoginLobby = function() return 0 end`. That is an anti-ban measure: no repeated login packets and no reaction to login failures. Side effect: the real lobby login never goes out, the game watchdog shows "Сервер не ответил. Вернитесь на страницу входа и повторите попытку.", and OK deadlocks on the disabled login.
